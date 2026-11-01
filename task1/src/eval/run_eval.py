@@ -68,52 +68,12 @@ def materialize_hf_model_dir(
     return out_dir
 
 
-def run_lm_eval(model_path: str, out_dir: Path, batch_size: str | int = "auto") -> dict[str, Any]:
-    from lm_eval import evaluator
-    from lm_eval.models.huggingface import HFLM
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    lm_like = HFLM(
-        pretrained=model_path,
-        dtype="float16",
-        trust_remote_code=True,
-        batch_size=batch_size,
-    )
-    like_results = evaluator.simple_evaluate(
-        model=lm_like,
-        tasks=["hellaswag", "boolq", "arc_easy"],
-        num_fewshot=0,
-        batch_size=batch_size,
-        log_samples=True,
-    )
-
-    lm_gen = HFLM(
-        pretrained=model_path,
-        dtype="float16",
-        trust_remote_code=True,
-        batch_size=1,
-        max_new_tokens=1024,
-        apply_chat_template=True,
-    )
-    gsm_results = evaluator.simple_evaluate(
-        model=lm_gen,
-        tasks=["gsm8k_cot"],
-        num_fewshot=0,
-        batch_size=1,
-        log_samples=True,
-        gen_kwargs={"do_sample": False, "temperature": 0.0},
-    )
-
-    combined_results: dict[str, Any] = {}
-    samples: dict[str, Any] = {}
-    for blob in (like_results, gsm_results):
-        if not blob:
-            continue
-        combined_results.update(blob.get("results", {}))
-        if blob.get("samples"):
-            samples.update(blob["samples"])
-
+def _persist_eval_blob(out_dir: Path, blob: dict[str, Any] | None, combined_results: dict, samples: dict) -> None:
+    if not blob:
+        return
+    combined_results.update(blob.get("results", {}) or {})
+    if blob.get("samples"):
+        samples.update(blob["samples"])
     write_json(out_dir / "metrics.json", combined_results)
     for task, rows in samples.items():
         write_json(out_dir / f"samples_{task}.json", rows)
@@ -131,6 +91,55 @@ def run_lm_eval(model_path: str, out_dir: Path, batch_size: str | int = "auto") 
                     }
                 )
             write_json(out_dir / "gsm8k_extractions.json", slim)
+
+
+def run_lm_eval(model_path: str, out_dir: Path, batch_size: str | int = "auto") -> dict[str, Any]:
+    from lm_eval import evaluator
+    from lm_eval.models.huggingface import HFLM
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    combined_results: dict[str, Any] = {}
+    samples: dict[str, Any] = {}
+
+    lm_like = HFLM(
+        pretrained=model_path,
+        dtype="float16",
+        trust_remote_code=True,
+        batch_size=batch_size,
+    )
+    like_results = evaluator.simple_evaluate(
+        model=lm_like,
+        tasks=["hellaswag", "boolq", "arc_easy"],
+        num_fewshot=0,
+        batch_size=batch_size,
+        log_samples=True,
+    )
+    _persist_eval_blob(out_dir, like_results, combined_results, samples)
+    del lm_like
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    # Do NOT pass max_new_tokens into HFLM(...): recent transformers+lm-eval stacks
+    # forward it into Qwen3ForCausalLM.__init__ and crash. Put generation limits in gen_kwargs.
+    lm_gen = HFLM(
+        pretrained=model_path,
+        dtype="float16",
+        trust_remote_code=True,
+        batch_size=1,
+        apply_chat_template=True,
+    )
+    gsm_results = evaluator.simple_evaluate(
+        model=lm_gen,
+        tasks=["gsm8k_cot"],
+        num_fewshot=0,
+        batch_size=1,
+        log_samples=True,
+        gen_kwargs={"do_sample": False, "temperature": 0.0, "max_new_tokens": 1024},
+    )
+    _persist_eval_blob(out_dir, gsm_results, combined_results, samples)
+    del lm_gen
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     return combined_results
 
 
