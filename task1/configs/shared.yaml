@@ -1,0 +1,75 @@
+seed: 6304
+model_name: Qwen/Qwen3-0.6B
+enable_thinking: false
+
+data:
+  source: meta-math/MetaMathQA
+  num_examples: 40000
+  max_seq_len: 2048
+  exclude_gsm8k_test_overlap: true
+
+training:
+  num_examples: 40000
+  num_updates: 1250
+  microbatch_size: 2
+  grad_accum: 16
+  effective_batch: 32
+  max_seq_len: 2048
+  optimizer: adamw
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  weight_decay: 0.01
+  warmup_updates: 38
+  max_grad_norm: 1.0
+  cosine_decay: true
+  gradient_checkpointing: true
+  fp16: true
+  log_every: 10
+  checkpoint_example_counts: [9984, 20000, 29984, 40000]
+  checkpoint_update_counts: [312, 625, 937, 1250]
+
+evaluation:
+  tasks:
+    - name: gsm8k
+      harness_task: gsm8k_cot
+      split: test
+      metric_primary: exact_match
+      method: generation
+      num_fewshot: 0
+      max_new_tokens: 1024
+    - name: hellaswag
+      harness_task: hellaswag
+      split: validation
+      metric_primary: acc_norm
+      method: likelihood
+    - name: boolq
+      harness_task: boolq
+      split: validation
+      metric_primary: acc
+      method: likelihood
+    - name: arc_easy
+      harness_task: arc_easy
+      split: test
+      metric_primary: acc_norm
+      method: likelihood
+  qualitative:
+    max_new_tokens: 512
+    prompts_file: assets/first_plot_questions.yaml
+  probe:
+    gsm8k_n: 32
+    hellaswag_n: 32
+    seed: 6304
+  layers_down_proj: [0, 13, 27]
+  protection_rank_k: 128
+
+paths:
+  artifacts_root: results
+  data_dir: results/raw/data
+  checkpoint_dir: results/checkpoints
+  logs_dir: results/logs
+  eval_dir: results/raw/eval
+  diagnostics_dir: results/diagnostics
+  qualitative_dir: results/qualitative
+  tables_dir: results/tables
+  figures_dir: results/figures
+  configs_used_dir: results/configs_used

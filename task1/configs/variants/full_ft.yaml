@@ -1,0 +1,7 @@
+name: full_ft
+method: full_ft
+peak_lr: 2.0e-5
+lambda_sp: 0.0
+lora: null
+oplora: null
+evaluate_at: [midpoint, final]

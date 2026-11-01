@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.env
+.python-version
+
+# Jupyter / IDE
+.ipynb_checkpoints/
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local experiment artifacts (regenerate on Kaggle / local runs)
+task1/results/checkpoints/
+task1/results/raw/
+task1/results/logs/
+task1/results/diagnostics/
+task1/results/qualitative/
+task1/results/tables/
+task1/results/figures/
+task1/results/resources/
+task1/results/configs_used/
+task1/results/analysis_index.json
+task1/kaggle_pulls/
+**/hf_home/
+**/.cache/
+
+# Keep result directory placeholders
+!task1/results/README.md
+!task1/results/.gitkeep
+
+# Large / generated Kaggle packaging temps
+*.pt
+*.safetensors
+*.bin
+*.ckpt
+!task1/assets/**
+
+# Secrets
+credentials.json
+kaggle.json
+*.pem
