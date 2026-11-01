@@ -119,21 +119,26 @@ def run_lm_eval(model_path: str, out_dir: Path, batch_size: str | int = "auto") 
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-    # Do NOT pass max_new_tokens into HFLM(...): recent transformers+lm-eval stacks
-    # forward it into Qwen3ForCausalLM.__init__ and crash. Put generation limits in gen_kwargs.
+    # Recent transformers+lm-eval stacks forward unknown HFLM kwargs into
+    # Qwen3ForCausalLM.__init__ (max_new_tokens / apply_chat_template). Set those
+    # as attributes / gen_kwargs instead of constructor kwargs.
     lm_gen = HFLM(
         pretrained=model_path,
         dtype="float16",
         trust_remote_code=True,
         batch_size=1,
-        apply_chat_template=True,
     )
+    lm_gen.apply_chat_template = True
+    if hasattr(lm_gen, "chat_template"):
+        # leave tokenizer template as-is; flag only controls prompting path
+        pass
     gsm_results = evaluator.simple_evaluate(
         model=lm_gen,
         tasks=["gsm8k_cot"],
         num_fewshot=0,
         batch_size=1,
         log_samples=True,
+        apply_chat_template=True,
         gen_kwargs={"do_sample": False, "temperature": 0.0, "max_new_tokens": 1024},
     )
     _persist_eval_blob(out_dir, gsm_results, combined_results, samples)
