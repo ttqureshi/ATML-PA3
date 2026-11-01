@@ -1,0 +1,19 @@
+{
+  "id": "mtayyabtahir/atml-pa3-t1-train-fullft",
+  "title": "atml-pa3-t1-train-fullft",
+  "code_file": "atml-pa3-t1-train-full-ft.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [
+    "mtayyabtahir/atml-pa3-task1-code"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": [],
+  "machine_shape": "NvidiaTeslaT4"
+}
