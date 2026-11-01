@@ -16,6 +16,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 USER = "mtayyabtahir"
 MAX_SLOTS = 2
+# Bump when a real training fix must replace a failed kernel once (not blind OOM loops).
+CODE_FIX_ID = "fp16-noscaler-v1"
 
 # folder, live slug, is_gate
 JOBS = [
@@ -196,9 +198,39 @@ def main() -> None:
                         {k: v[0] for k, v in in_flight.items()},
                     )
                     raise SystemExit(f"Gate job failed: {slug} status={st}")
-                # Do NOT auto-retry train failures: burning Kaggle GPU quota on the same
-                # OOM/bug is worse than waiting for a real fix + manual/controlled requeue.
-                print("NON-GATE FAILURE", slug, st, "— not auto-retrying (save GPU quota)", flush=True)
+                # At most one requeue per CODE_FIX_ID (deploy a real fix, don't loop OOMs).
+                blob = {}
+                if state_path.exists():
+                    try:
+                        blob = json.loads(state_path.read_text(encoding="utf-8"))
+                    except Exception:
+                        blob = {}
+                applied = dict(blob.get("fix_applied", {}))
+                if applied.get(slug) != CODE_FIX_ID and "pipeline-post" not in slug:
+                    print(
+                        "NON-GATE FAILURE",
+                        slug,
+                        st,
+                        f"— requeue once for code fix {CODE_FIX_ID}",
+                        flush=True,
+                    )
+                    failed.discard(slug)
+                    pending.append((folder, slug, is_gate))
+                    applied[slug] = CODE_FIX_ID
+                    blob["fix_applied"] = applied
+                    blob["done"] = sorted(done)
+                    blob["failed"] = sorted(failed)
+                    blob["in_flight"] = {k: v[0] for k, v in in_flight.items()}
+                    state_path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
+                    continue
+                print(
+                    "NON-GATE FAILURE",
+                    slug,
+                    st,
+                    "— not retrying; fix already applied for",
+                    CODE_FIX_ID,
+                    flush=True,
+                )
 
             # Drop from pending if still listed
             pending = [(f, s, g) for f, s, g in pending if s != slug]
