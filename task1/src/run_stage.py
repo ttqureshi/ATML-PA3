@@ -28,15 +28,33 @@ if str(ROOT) not in sys.path:
 def _run(module: str, extra: list[str] | None = None) -> None:
     cmd = [sys.executable, "-m", module] + (extra or [])
     print(">>", " ".join(cmd), flush=True)
+    from pathlib import Path as _P
+    art = _P(os.environ.get("ATML_ARTIFACTS_ROOT", "/kaggle/working/results"))
+    art.mkdir(parents=True, exist_ok=True)
+    log_path = art / "subprocess_last.log"
     try:
-        subprocess.check_call(cmd, cwd=str(ROOT))
+        with open(log_path, "w", encoding="utf-8") as logf:
+            proc = subprocess.run(
+                cmd,
+                cwd=str(ROOT),
+                stdout=logf,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+        # Also echo the log to notebook stdout for Kaggle visibility
+        try:
+            print(log_path.read_text(encoding="utf-8", errors="replace")[-20000:], flush=True)
+        except Exception:
+            pass
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode, cmd)
     except Exception:
         import traceback
-        from pathlib import Path as _P
-        art = _P(os.environ.get("ATML_ARTIFACTS_ROOT", "/kaggle/working/results"))
-        art.mkdir(parents=True, exist_ok=True)
+        detail = ""
+        if log_path.exists():
+            detail = log_path.read_text(encoding="utf-8", errors="replace")
         (art / "failure.txt").write_text(
-            "CMD: " + " ".join(cmd) + "\n\n" + traceback.format_exc(),
+            "CMD: " + " ".join(cmd) + "\n\n" + traceback.format_exc() + "\n\n--- subprocess log ---\n" + detail,
             encoding="utf-8",
         )
         raise

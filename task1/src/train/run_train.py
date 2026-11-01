@@ -58,13 +58,22 @@ def main() -> None:
     save_config_snapshot(cfg, dirs["configs_used"] / f"train_{args.variant}.yaml")
     logger.info("Starting variant=%s method=%s", variant["name"], variant["method"])
 
-    trainer = SFTTrainer(
-        shared_cfg=shared,
-        variant_cfg=variant,
-        artifacts_dirs=dirs,
-        resume_from=Path(args.resume_from) if args.resume_from else None,
-    )
-    summary = trainer.train()
+    try:
+        logger.info("Constructing trainer...")
+        trainer = SFTTrainer(
+            shared_cfg=shared,
+            variant_cfg=variant,
+            artifacts_dirs=dirs,
+            resume_from=Path(args.resume_from) if args.resume_from else None,
+        )
+        logger.info("Trainer ready; beginning optimization loop")
+        summary = trainer.train()
+    except Exception:
+        import traceback
+        err = dirs["logs"] / f"train_exception_{args.variant}.txt"
+        err.write_text(traceback.format_exc(), encoding="utf-8")
+        logger.exception("Training failed; wrote %s", err)
+        raise
     logger.info("Finished: %s", summary)
 
 

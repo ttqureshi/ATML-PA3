@@ -50,31 +50,31 @@ def load_eval_model(
             model = peft_model
         model = model.to(device)
     elif method == "oplora":
-        if merge_adapters:
-            # Rebuild OPLoRA on a throwaway model to read projected deltas, then merge.
-            # Prefer projected factors file if present.
-            projected_path = model_dir / "oplora_projected_factors.pt"
-            if projected_path.exists():
-                model = _merge_from_projected_factors(
-                    model_name, projected_path, device=device
-                )
-            else:
-                tmp = load_base_model(
-                    model_name, torch_dtype=torch.float16, gradient_checkpointing=False
-                )
-                tmp, _ = attach_oplora(tmp)
-                state = torch.load(model_dir / "oplora_state.pt", map_location="cpu")
-                tmp.load_state_dict(state, strict=False)
-                model = merge_oplora_into_fresh_backbone(tmp, model_name)
-                model = model.to(device)
-                del tmp
+        projected_path = model_dir / "oplora_projected_factors.pt"
+        adapters_path = model_dir / "oplora_adapters.pt"
+        legacy_path = model_dir / "oplora_state.pt"
+        if merge_adapters and projected_path.exists():
+            model = _merge_from_projected_factors(
+                model_name, projected_path, device=device
+            )
         else:
             model = load_base_model(
                 model_name, torch_dtype=torch.float16, gradient_checkpointing=False
             )
             model, _ = attach_oplora(model)
-            state = torch.load(model_dir / "oplora_state.pt", map_location="cpu")
-            model.load_state_dict(state, strict=False)
+            if adapters_path.exists():
+                blob = torch.load(adapters_path, map_location="cpu", weights_only=False)
+                name_to_mod = dict(model.named_modules())
+                for key, tensor in blob.items():
+                    if key.endswith(".lora_A"):
+                        name_to_mod[key[: -len(".lora_A")]].lora_A.data.copy_(tensor)
+                    elif key.endswith(".lora_B"):
+                        name_to_mod[key[: -len(".lora_B")]].lora_B.data.copy_(tensor)
+            elif legacy_path.exists():
+                state = torch.load(legacy_path, map_location="cpu", weights_only=False)
+                model.load_state_dict(state, strict=False)
+            if merge_adapters:
+                model = merge_oplora_into_fresh_backbone(model, model_name)
             model = model.to(device)
     else:
         raise ValueError(method)

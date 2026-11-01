@@ -170,7 +170,7 @@ class SFTTrainer:
             self.dataset,
             batch_size=self.microbatch,
             shuffle=False,  # source order, no shuffle
-            num_workers=2,
+            num_workers=0,  # more reliable on Kaggle; avoids worker IPC issues
             pin_memory=self.device.type == "cuda",
             collate_fn=lambda feats: sft_collate_fn(feats, self.tokenizer.pad_token_id),
             worker_init_fn=seed_worker,
@@ -215,8 +215,22 @@ class SFTTrainer:
                 if p.requires_grad:
                     p.data = p.data.float()
         elif self.method == "oplora":
-            state_dict = torch.load(model_dir / "oplora_state.pt", map_location="cpu")
-            self.model.load_state_dict(state_dict)
+            adapter_path = model_dir / "oplora_adapters.pt"
+            legacy = model_dir / "oplora_state.pt"
+            blob = torch.load(
+                adapter_path if adapter_path.exists() else legacy,
+                map_location="cpu",
+                weights_only=False,
+            )
+            if adapter_path.exists():
+                name_to_mod = dict(self.model.named_modules())
+                for key, tensor in blob.items():
+                    if key.endswith(".lora_A"):
+                        name_to_mod[key[: -len(".lora_A")]].lora_A.data.copy_(tensor)
+                    elif key.endswith(".lora_B"):
+                        name_to_mod[key[: -len(".lora_B")]].lora_B.data.copy_(tensor)
+            else:
+                self.model.load_state_dict(blob, strict=False)
             self.model = self.model.to(self.device)
         else:
             from transformers import AutoModelForCausalLM
