@@ -82,15 +82,20 @@ def save_training_checkpoint(
             with open(model_dir / "oplora_meta.json", "w", encoding="utf-8") as f:
                 json.dump(oplora_meta, f, indent=2)
     else:
-        # Ensure FP16 serialization for full FT (avoids ~2.4GB FP32 dumps).
+        # Serialize full-FT weights as FP16 for disk, but restore FP32 master
+        # weights in-place so GradScaler training can continue after the save.
         was_training = model.training
         model.eval()
+        restored = []
         try:
             for p in model.parameters():
                 if p.is_floating_point() and p.dtype != torch.float16:
+                    restored.append(p)
                     p.data = p.data.half()
             model.save_pretrained(model_dir, safe_serialization=True)
         finally:
+            for p in restored:
+                p.data = p.data.float()
             if was_training:
                 model.train()
 

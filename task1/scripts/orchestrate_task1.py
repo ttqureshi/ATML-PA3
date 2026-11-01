@@ -11,6 +11,7 @@ import json
 import subprocess
 import time
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 USER = "mtayyabtahir"
@@ -86,18 +87,27 @@ def pull_small(slug: str, dest: Path) -> None:
                 pass
 
 
-def save_state(path: Path, done: set[str], failed: set[str], in_flight: dict[str, str]) -> None:
-    path.write_text(
-        json.dumps(
-            {
-                "done": sorted(done),
-                "failed": sorted(failed),
-                "in_flight": in_flight,
-            },
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+def save_state(
+    path: Path,
+    done: set[str],
+    failed: set[str],
+    in_flight: dict[str, str],
+    retries: dict[str, int] | None = None,
+) -> None:
+    blob: dict[str, Any] = {
+        "done": sorted(done),
+        "failed": sorted(failed),
+        "in_flight": in_flight,
+    }
+    if path.exists():
+        try:
+            prev = json.loads(path.read_text(encoding="utf-8"))
+            blob["retries"] = prev.get("retries", {})
+        except Exception:
+            blob["retries"] = {}
+    if retries is not None:
+        blob["retries"] = retries
+    path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
 
 
 def deps_satisfied(slug: str, done: set[str]) -> bool:
@@ -186,7 +196,22 @@ def main() -> None:
                         {k: v[0] for k, v in in_flight.items()},
                     )
                     raise SystemExit(f"Gate job failed: {slug} status={st}")
-                print("NON-GATE FAILURE", slug, st, "— will not auto-retry", flush=True)
+                # One automatic requeue for train/prep failures (common after hotfixes).
+                retries = int(json.loads(state_path.read_text(encoding="utf-8")).get("retries", {}).get(slug, 0)) if state_path.exists() else 0
+                if retries < 1 and "pipeline-post" not in slug:
+                    print("NON-GATE FAILURE", slug, st, f"— requeue retry {retries+1}", flush=True)
+                    failed.discard(slug)
+                    pending.append((folder, slug, is_gate))
+                    blob = {}
+                    if state_path.exists():
+                        blob = json.loads(state_path.read_text(encoding="utf-8"))
+                    blob.setdefault("retries", {})[slug] = retries + 1
+                    blob["done"] = sorted(done)
+                    blob["failed"] = sorted(failed)
+                    blob["in_flight"] = {k: v[0] for k, v in in_flight.items()}
+                    state_path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
+                    continue
+                print("NON-GATE FAILURE", slug, st, "— giving up after retry", flush=True)
 
             # Drop from pending if still listed
             pending = [(f, s, g) for f, s, g in pending if s != slug]

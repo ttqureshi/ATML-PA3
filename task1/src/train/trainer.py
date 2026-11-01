@@ -100,10 +100,11 @@ class SFTTrainer:
         )
 
         if self.method in {"full_ft", "full_ft_l2sp"}:
-            # FP16 weights + AMP. AdamW keeps FP32 optimizer states.
-            # Only L2-SP keeps a CPU FP32 starting-point copy in RAM (not written to disk:
-            # a full theta0.pt is multi-GB and blew Kaggle working storage).
-            model = model.to(self.device)
+            # GradScaler cannot unscale FP16 parameter grads. Keep master weights in
+            # FP32 and use autocast(float16) for the forward (standard AMP). Qwen3-0.6B
+            # fits in T4/P100 memory; checkpoints still save compactly via our saver.
+            # L2-SP keeps theta0 in RAM only (not on disk).
+            model = model.float().to(self.device)
             self.theta0_path = None
             if self.method == "full_ft_l2sp":
                 self.theta0 = collect_starting_point(model)
