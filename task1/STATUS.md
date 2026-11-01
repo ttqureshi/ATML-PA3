@@ -1,6 +1,7 @@
 # ATML PA3 Task 1 — execution status
 
 Canonical code: `C:\Users\PMLS\ATML-PA3\task1`  
+Public GitHub: https://github.com/ttqureshi/ATML-PA3  
 (Google Drive workspace was out of quota; pointer file left in the Drive folder.)
 
 ## Implementation
