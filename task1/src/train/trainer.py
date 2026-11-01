@@ -205,7 +205,9 @@ class SFTTrainer:
         if self.method == "lora":
             # Reload PEFT adapters
             from peft import PeftModel
+            from src.models.lora import _neutralize_torchao_check
 
+            _neutralize_torchao_check()
             base = load_base_model(
                 self.model_name, torch_dtype=torch.float16, gradient_checkpointing=True
             )

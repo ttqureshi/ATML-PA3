@@ -18,6 +18,19 @@ DEFAULT_TARGETS = [
 ]
 
 
+def _neutralize_torchao_check() -> None:
+    """Kaggle ships torchao 0.10; recent peft raises ImportError instead of skipping it."""
+    try:
+        import peft.import_utils as iu
+
+        iu.is_torchao_available = lambda: False  # type: ignore[assignment]
+    except Exception:
+        pass
+
+
+_neutralize_torchao_check()
+
+
 def attach_lora(
     model,
     r: int,
@@ -27,6 +40,7 @@ def attach_lora(
 ) -> Any:
     freeze_backbone(model)
     enable_input_require_grads(model)
+    _neutralize_torchao_check()
     cfg = LoraConfig(
         r=r,
         lora_alpha=alpha,

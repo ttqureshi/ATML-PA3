@@ -71,6 +71,28 @@ def main() -> None:
     art = ["--artifacts-root", args.artifacts_root]
     stage = args.stage
 
+    # Fingerprint so we can verify Kaggle ran the intended code revision.
+    try:
+        from pathlib import Path as _P
+        import json as _json
+        trainer_txt = (_P(ROOT) / "src" / "train" / "trainer.py").read_text(encoding="utf-8")
+        lora_txt = (_P(ROOT) / "src" / "models" / "lora.py").read_text(encoding="utf-8")
+        fp = {
+            "stage": stage,
+            # Adapter-only FP32 cast is intentional; flag only a full-model float() sweep.
+            "has_full_model_fp32_cast": "for p in model.parameters():\n            p.data = p.data.float()"
+            in trainer_txt,
+            "has_torchao_neutralize": "_neutralize_torchao_check" in lora_txt,
+            "smoke_lora_only": "LoRA-only smoke"
+            in (_P(ROOT) / "src" / "run_stage.py").read_text(encoding="utf-8"),
+        }
+        out = _P(args.artifacts_root)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "code_fingerprint.json").write_text(_json.dumps(fp, indent=2), encoding="utf-8")
+        print("CODE_FINGERPRINT", fp, flush=True)
+    except Exception as e:
+        print("fingerprint_failed", e, flush=True)
+
     if stage == "prepare_data":
         _run("src.data.prepare_metamath", art)
         _run("src.diagnostics.probe_set", art)

@@ -8,7 +8,10 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM
 
 from src.models.load_qwen import load_base_model, load_tokenizer
+from src.models.lora import _neutralize_torchao_check
 from src.models.oplora import OPLoRALinear, attach_oplora, merge_oplora_into_fresh_backbone
+
+_neutralize_torchao_check()
 
 
 def load_eval_model(
