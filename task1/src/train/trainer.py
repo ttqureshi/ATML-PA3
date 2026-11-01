@@ -54,6 +54,11 @@ class SFTTrainer:
         train_cfg = shared_cfg["training"]
         self.microbatch = int(train_cfg["microbatch_size"])
         self.grad_accum = int(train_cfg["grad_accum"])
+        # Full FT on ~15GB Kaggle GPUs: keep effective batch 32 with microbatch 1.
+        if self.method in {"full_ft", "full_ft_l2sp"} and self.microbatch > 1:
+            scale = self.microbatch
+            self.microbatch = 1
+            self.grad_accum = int(self.grad_accum * scale)
         self.num_updates = int(train_cfg["num_updates"])
         self.warmup = int(train_cfg["warmup_updates"])
         self.max_grad_norm = float(train_cfg["max_grad_norm"])
@@ -72,10 +77,13 @@ class SFTTrainer:
         self.theta0 = None
         self.theta0_path = None
         self.oplora_meta = None
+        # GradScaler requires FP32 grads. Full-FT stays FP16 to fit 15GB, so scaler is
+        # OFF for full_ft*; LoRA/OPLoRA keep FP32 adapters and can use scaler.
+        self.use_scaler = self.method in {"lora", "oplora"} and self.device.type == "cuda"
         try:
-            self.scaler = GradScaler("cuda", enabled=self.device.type == "cuda")
+            self.scaler = GradScaler("cuda", enabled=self.use_scaler)
         except TypeError:
-            self.scaler = GradScaler(enabled=self.device.type == "cuda")
+            self.scaler = GradScaler(enabled=self.use_scaler)
         self.skipped_updates = 0
 
         self._build_model()
@@ -90,8 +98,8 @@ class SFTTrainer:
             self._resume(resume_from)
 
     def _build_model(self) -> None:
-        # Full FT: FP16 compute + FP32 master via GradScaler/master params approach.
-        # Adapter variants: frozen FP16 backbone + FP32 adapters.
+        # Full FT: FP16 weights + grad checkpointing + no GradScaler (fits 15GB).
+        # Adapter variants: frozen FP16 backbone + FP32 adapters (+ GradScaler).
         model = load_base_model(
             self.model_name,
             torch_dtype=torch.float16,
@@ -100,17 +108,24 @@ class SFTTrainer:
         )
 
         if self.method in {"full_ft", "full_ft_l2sp"}:
-            # GradScaler cannot unscale FP16 parameter grads. Keep master weights in
-            # FP32 and use autocast(float16) for the forward (standard AMP). Qwen3-0.6B
-            # fits in T4/P100 memory; checkpoints still save compactly via our saver.
-            # L2-SP keeps theta0 in RAM only (not on disk).
-            model = model.float().to(self.device)
+            # Stay FP16. FP32 masters + Adam states OOM on Kaggle T4/P100 (15GB).
+            model = model.to(self.device)
             self.theta0_path = None
             if self.method == "full_ft_l2sp":
                 self.theta0 = collect_starting_point(model)
             else:
                 self.theta0 = None
             self.param_report = count_trainable_parameters(model)
+            print(
+                "FULL_FT_MEM_MODE",
+                {
+                    "dtype": "float16",
+                    "use_scaler": self.use_scaler,
+                    "microbatch": self.microbatch,
+                    "grad_accum": self.grad_accum,
+                },
+                flush=True,
+            )
         elif self.method == "lora":
             lcfg = self.variant["lora"]
             model = attach_lora(
@@ -284,18 +299,19 @@ class SFTTrainer:
                     break
 
                 batch = {k: v.to(self.device, non_blocking=True) for k, v in batch.items()}
+                # Autocast only when scaler path is active (FP32 adapters). Pure FP16
+                # full-FT already runs in half; nested autocast adds little and can bloat mem.
+                amp_on = self.use_scaler and self.device.type == "cuda"
                 try:
-                    amp_ctx = autocast("cuda", enabled=self.device.type == "cuda", dtype=torch.float16)
+                    amp_ctx = autocast("cuda", enabled=amp_on, dtype=torch.float16)
                 except TypeError:
-                    amp_ctx = autocast(enabled=self.device.type == "cuda", dtype=torch.float16)
+                    amp_ctx = autocast(enabled=amp_on, dtype=torch.float16)
                 with amp_ctx:
                     outputs = self.model(
                         input_ids=batch["input_ids"],
                         attention_mask=batch["attention_mask"],
                         labels=batch["labels"],
                     )
-                    # HF returns mean over non -100 tokens in the microbatch.
-                    # Reconstruct sum to normalize over the full effective batch later.
                     labels = batch["labels"]
                     n_tok = int((labels != -100).sum().item())
                     if n_tok == 0:
@@ -303,47 +319,42 @@ class SFTTrainer:
                     else:
                         loss_sum = outputs.loss.float() * n_tok
 
-                # Scale for accumulation: we'll divide by total tokens after loop.
-                # Store unscaled token-sum contribution; GradScaler scales the tensor we backward.
                 token_loss_sum = token_loss_sum + loss_sum.detach()
                 token_count = token_count + float(n_tok)
 
-                # Backward with placeholder: we need a differentiable loss.
-                # Use (loss_sum / expected_tokens_approx) then correct? Better approach:
-                # backward loss_sum / TOTAL_TOKENS_CONSTANT where TOTAL = token_count after loop —
-                # but token_count unknown mid-loop. Assignment: normalize over all valid
-                # response tokens in the effective batch.
-                # Practical approach: accumulate gradients of (loss_sum), then manually
-                # divide grads by total_token_count before optimizer step.
-                self.scaler.scale(loss_sum).backward()
+                # Accumulate Σloss grads; divide by total tokens after the accum loop.
+                if self.use_scaler:
+                    self.scaler.scale(loss_sum).backward()
+                else:
+                    loss_sum.backward()
                 self.examples_seen += batch["input_ids"].size(0)
 
             total_tokens = float(token_count.item())
             if total_tokens <= 0:
                 raise RuntimeError("Effective batch contained zero supervised tokens")
 
-            # Convert accumulated Σloss into mean over effective-batch tokens by scaling grads.
             for p in self.model.parameters():
                 if p.grad is not None:
                     p.grad.detach().div_(total_tokens)
 
             sft_loss = float((token_loss_sum / token_count).item())
 
-            # Optional L2-SP penalty added after SFT grad accumulation.
             if self.method == "full_ft_l2sp" and self.lambda_sp > 0:
                 omega = l2_sp_penalty(self.model, self.theta0, self.device)
                 omega_val = float(omega.detach().item())
-                # grads for lambda * omega
-                self.scaler.scale(self.lambda_sp * omega).backward()
+                if self.use_scaler:
+                    self.scaler.scale(self.lambda_sp * omega).backward()
+                else:
+                    (self.lambda_sp * omega).backward()
             else:
                 omega_val = 0.0 if self.method == "full_ft_l2sp" else None
 
-            self.scaler.unscale_(self.optimizer)
+            if self.use_scaler:
+                self.scaler.unscale_(self.optimizer)
             grad_norm = torch.nn.utils.clip_grad_norm_(
                 [p for p in self.model.parameters() if p.requires_grad],
                 self.max_grad_norm,
             )
-            # Detect non-finite grads after unscale
             found_inf = False
             for p in self.model.parameters():
                 if p.grad is not None and not torch.isfinite(p.grad).all():
@@ -353,10 +364,14 @@ class SFTTrainer:
                 self.skipped_updates += 1
                 skipped = True
                 self.optimizer.zero_grad(set_to_none=True)
-                self.scaler.update()
+                if self.use_scaler:
+                    self.scaler.update()
             else:
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
+                if self.use_scaler:
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                else:
+                    self.optimizer.step()
                 self.scheduler.step()
 
             self.global_step += 1

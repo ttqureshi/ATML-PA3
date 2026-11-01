@@ -43,12 +43,11 @@ def build_cosine_scheduler(optimizer, num_updates: int, warmup_updates: int) -> 
 
 
 def collect_starting_point(model) -> dict[str, torch.Tensor]:
-    """Detach CPU FP32 copies of all unique trainable-or-not parameters for L2-SP."""
+    """Detach CPU copies of parameters for L2-SP (same dtype as model; keeps RAM down)."""
     ref = {}
     for name, param in model.named_parameters():
-        # Unique names already; tied weights share storage but appear once under one name
-        # in named_parameters for HF models when tied correctly.
-        ref[name] = param.detach().float().cpu().clone()
+        # Keep model dtype (FP16 for full FT) — casting everything to FP32 doubles RAM.
+        ref[name] = param.detach().cpu().clone()
     return ref
 
 
@@ -58,8 +57,11 @@ def l2_sp_penalty(model, theta0: dict[str, torch.Tensor], device: torch.device) 
     for name, param in model.named_parameters():
         if name not in theta0:
             continue
-        diff = param.float() - theta0[name].to(device=device, dtype=torch.float32)
+        # One parameter at a time to avoid materializing a full second model on GPU.
+        ref = theta0[name].to(device=device, dtype=param.dtype, non_blocking=True)
+        diff = param - ref
         total = total + 0.5 * torch.sum(diff * diff)
+        del ref
     return total
 
 

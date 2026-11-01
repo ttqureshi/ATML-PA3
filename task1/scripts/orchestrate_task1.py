@@ -196,22 +196,9 @@ def main() -> None:
                         {k: v[0] for k, v in in_flight.items()},
                     )
                     raise SystemExit(f"Gate job failed: {slug} status={st}")
-                # One automatic requeue for train/prep failures (common after hotfixes).
-                retries = int(json.loads(state_path.read_text(encoding="utf-8")).get("retries", {}).get(slug, 0)) if state_path.exists() else 0
-                if retries < 1 and "pipeline-post" not in slug:
-                    print("NON-GATE FAILURE", slug, st, f"— requeue retry {retries+1}", flush=True)
-                    failed.discard(slug)
-                    pending.append((folder, slug, is_gate))
-                    blob = {}
-                    if state_path.exists():
-                        blob = json.loads(state_path.read_text(encoding="utf-8"))
-                    blob.setdefault("retries", {})[slug] = retries + 1
-                    blob["done"] = sorted(done)
-                    blob["failed"] = sorted(failed)
-                    blob["in_flight"] = {k: v[0] for k, v in in_flight.items()}
-                    state_path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
-                    continue
-                print("NON-GATE FAILURE", slug, st, "— giving up after retry", flush=True)
+                # Do NOT auto-retry train failures: burning Kaggle GPU quota on the same
+                # OOM/bug is worse than waiting for a real fix + manual/controlled requeue.
+                print("NON-GATE FAILURE", slug, st, "— not auto-retrying (save GPU quota)", flush=True)
 
             # Drop from pending if still listed
             pending = [(f, s, g) for f, s, g in pending if s != slug]
