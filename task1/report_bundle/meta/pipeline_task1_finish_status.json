@@ -1,0 +1,29 @@
+{
+  "state": "COMPLETE",
+  "resume": true,
+  "phase": "done",
+  "updated_at_utc": "2026-11-04T18:20:36.748785+00:00",
+  "step": "post_analyze",
+  "cmd": [
+    "/usr/bin/python3",
+    "-m",
+    "src.run_stage",
+    "--stage",
+    "post_analyze",
+    "--artifacts-root",
+    "/content/atml_results"
+  ],
+  "condition": "full_ft_l2sp_final",
+  "last_gsm8k_flex": 0.6603487490523123,
+  "last_condition": "full_ft_l2sp_final",
+  "post": {
+    "status": "COMPLETE",
+    "stage": "post_analyze",
+    "completed_at_utc": "2026-11-04T18:20:36.376117+00:00",
+    "host": "colab-t4-resume",
+    "full_ft_reeval": true,
+    "skipped_midpoint_reeval": true,
+    "midpoint_gsm8k_flex": 0.5602729340409401,
+    "benchmark_table": "/content/drive/MyDrive/MS AI/Semester_3/ATML/PAs/ATML-PA3/task1/results_colab/tables/benchmark_table.md"
+  }
+}

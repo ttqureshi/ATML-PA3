@@ -1,5 +1,5 @@
 {
-  "id": "mtayyabtahir/atml-pa3-t1-pipeline-post",
+  "id": "ttqureshi/atml-pa3-t1-pipeline-post",
   "title": "atml-pa3-t1-pipeline-post",
   "code_file": "atml-pa3-t1-pipeline-post.ipynb",
   "language": "python",
@@ -9,9 +9,12 @@
   "enable_tpu": false,
   "enable_internet": true,
   "keywords": [],
-  "dataset_sources": [],
+  "dataset_sources": [
+    "ttqureshi/atml-pa3-t1-ckpts-fullft",
+    "ttqureshi/atml-pa3-t1-ckpts-l2sp",
+    "ttqureshi/atml-pa3-t1-ckpts-adapters"
+  ],
   "kernel_sources": [],
   "competition_sources": [],
-  "model_sources": [],
-  "machine_shape": "NvidiaTeslaT4"
+  "model_sources": []
 }

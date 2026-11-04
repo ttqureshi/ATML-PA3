@@ -1,5 +1,5 @@
 {
-  "id": "mtayyabtahir/atml-pa3-t1-train-oplora",
+  "id": "ttqureshi/atml-pa3-t1-train-oplora",
   "title": "atml-pa3-t1-train-oplora",
   "code_file": "atml-pa3-t1-train-oplora.ipynb",
   "language": "python",
@@ -12,6 +12,5 @@
   "dataset_sources": [],
   "kernel_sources": [],
   "competition_sources": [],
-  "model_sources": [],
-  "machine_shape": "NvidiaTeslaT4"
+  "model_sources": []
 }

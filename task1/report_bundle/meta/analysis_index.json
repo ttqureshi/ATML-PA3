@@ -1,0 +1,16 @@
+{
+  "tables": {
+    "benchmark": "/content/atml_results/tables/benchmark_primary.csv",
+    "resources": "None",
+    "weight_space": "/content/atml_results/tables/weight_space.csv"
+  },
+  "figures": {
+    "sft_loss": "None",
+    "l2sp": "None",
+    "benchmark": "/content/atml_results/figures/benchmark_scores.png",
+    "diagnostics": [
+      "/content/atml_results/figures/weight_space_diagnostics.png",
+      "/content/atml_results/figures/activation_diagnostics.png"
+    ]
+  }
+}

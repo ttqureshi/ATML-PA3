@@ -1,0 +1,10 @@
+{
+  "status": "COMPLETE",
+  "stage": "post_analyze",
+  "completed_at_utc": "2026-11-04T18:20:36.376117+00:00",
+  "host": "colab-t4-resume",
+  "full_ft_reeval": true,
+  "skipped_midpoint_reeval": true,
+  "midpoint_gsm8k_flex": 0.5602729340409401,
+  "benchmark_table": "/content/drive/MyDrive/MS AI/Semester_3/ATML/PAs/ATML-PA3/task1/results_colab/tables/benchmark_table.md"
+}

@@ -1,0 +1,19 @@
+name: lora_r4
+method: lora
+peak_lr: 2.0e-4
+lambda_sp: 0.0
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  bias: none
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+oplora: null
+evaluate_at: [final]

@@ -1,0 +1,14 @@
+{
+  "variant": "full_ft_l2sp",
+  "method": "full_ft_l2sp",
+  "steps": 1250,
+  "examples_seen": 40000,
+  "train_seconds": 11479.745433781,
+  "peak_mem_bytes": 9049674752,
+  "peak_mem_gb": 8.428166389465332,
+  "trainable_params": {
+    "trainable": 596049920,
+    "total": 596049920
+  },
+  "skipped_updates": 1249
+}

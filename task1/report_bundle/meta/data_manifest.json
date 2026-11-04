@@ -1,0 +1,21 @@
+{
+  "dataset": "meta-math/MetaMathQA",
+  "num_examples": 40000,
+  "order": "source_order_no_shuffle",
+  "truncation": "none_on_answers",
+  "files": {
+    "jsonl": "metamath_40k.jsonl",
+    "ids": "example_ids.json",
+    "stats": "filter_stats.json"
+  },
+  "stats": {
+    "source_rows_scanned": 40002,
+    "excluded_empty": 0,
+    "excluded_overlength": 2,
+    "excluded_gsm8k_overlap": 0,
+    "kept": 40000,
+    "normalization": "nfkc+lower+strip+collapse_ws+strip_quotes",
+    "max_seq_len": 2048,
+    "num_examples_requested": 40000
+  }
+}

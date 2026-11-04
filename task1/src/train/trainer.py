@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import json
+import math
+import os
 import time
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import torch
 from torch.utils.data import DataLoader
@@ -65,6 +66,13 @@ class SFTTrainer:
         self.max_seq_len = int(train_cfg["max_seq_len"])
         self.log_every = int(train_cfg.get("log_every", 10))
         self.ckpt_updates = set(train_cfg["checkpoint_update_counts"])
+        # Full-FT on Kaggle: only keep eval-needed steps as model-only (~1.2GB each).
+        # Prior runs saved optimizer at 312/625/937/1250 (~2.7GB×4) → mid/final got
+        # pruned from kernel output and eval fell back to old NaN Drive weights.
+        if self.method == "full_ft":
+            self.ckpt_updates = {625, 1250}
+        elif self.method == "full_ft_l2sp":
+            self.ckpt_updates = {1250}
 
         self.tokenizer = load_tokenizer(self.model_name)
         self.metrics_logger = JsonlLogger(
@@ -77,14 +85,25 @@ class SFTTrainer:
         self.theta0 = None
         self.theta0_path = None
         self.oplora_meta = None
-        # GradScaler requires FP32 grads. Full-FT stays FP16 to fit 15GB, so scaler is
-        # OFF for full_ft*; LoRA/OPLoRA keep FP32 adapters and can use scaler.
-        self.use_scaler = self.method in {"lora", "oplora"} and self.device.type == "cuda"
+        # GradScaler only accepts FP32 gradients. Prior full-FT used pure FP16 weights
+        # with scaler OFF → overflow → NaN from step 2. Fix: standard AMP for full_ft*
+        # (FP32 masters + autocast + GradScaler + AdamW8bit, microbatch=1).
+        # AdamW8bit is required on 15GB T4 — FP32 Adam states OOM around step ~25.
+        # LoRA/OPLoRA keep a frozen FP16 backbone with FP32 adapters (+ GradScaler).
+        self.use_scaler = self.device.type == "cuda"
+        # Lower init_scale avoids a long streak of warmup skips on full-FT.
+        init_scale = 2**10 if self.method in {"full_ft", "full_ft_l2sp"} else 2**16
         try:
-            self.scaler = GradScaler("cuda", enabled=self.use_scaler)
+            self.scaler = GradScaler("cuda", enabled=self.use_scaler, init_scale=init_scale)
         except TypeError:
-            self.scaler = GradScaler(enabled=self.use_scaler)
+            try:
+                self.scaler = GradScaler(enabled=self.use_scaler, init_scale=init_scale)
+            except TypeError:
+                self.scaler = GradScaler(enabled=self.use_scaler)
         self.skipped_updates = 0
+        self.consecutive_skips = 0
+        # Abort before burning a full GPU session on a dead NaN run.
+        self.max_consecutive_skips = int(os.environ.get("ATML_MAX_CONSECUTIVE_SKIPS", "25"))
 
         self._build_model()
         self._build_data()
@@ -98,17 +117,15 @@ class SFTTrainer:
             self._resume(resume_from)
 
     def _build_model(self) -> None:
-        # Full FT: FP16 weights + grad checkpointing + no GradScaler (fits 15GB).
-        # Adapter variants: frozen FP16 backbone + FP32 adapters (+ GradScaler).
-        model = load_base_model(
-            self.model_name,
-            torch_dtype=torch.float16,
-            gradient_checkpointing=True,
-            device=None,
-        )
-
         if self.method in {"full_ft", "full_ft_l2sp"}:
-            # Stay FP16. FP32 masters + Adam states OOM on Kaggle T4/P100 (15GB).
+            # Standard mixed precision: FP32 params so GradScaler can unscale.
+            # microbatch forced to 1 above; grad checkpointing keeps T4 15GB feasible.
+            model = load_base_model(
+                self.model_name,
+                torch_dtype=torch.float32,
+                gradient_checkpointing=True,
+                device=None,
+            )
             model = model.to(self.device)
             self.theta0_path = None
             if self.method == "full_ft_l2sp":
@@ -119,14 +136,34 @@ class SFTTrainer:
             print(
                 "FULL_FT_MEM_MODE",
                 {
-                    "dtype": "float16",
+                    "dtype": "float32",
+                    "amp": "autocast_fp16+GradScaler",
+                    "optimizer": "AdamW8bit",
                     "use_scaler": self.use_scaler,
+                    "scaler_enabled": bool(
+                        getattr(self.scaler, "is_enabled", lambda: self.use_scaler)()
+                    ),
+                    "max_consecutive_skips": self.max_consecutive_skips,
                     "microbatch": self.microbatch,
                     "grad_accum": self.grad_accum,
                 },
                 flush=True,
             )
-        elif self.method == "lora":
+            self.model = model
+            write_json(
+                self.dirs["resources"] / f"params_{self.variant_name}.json",
+                self.param_report,
+            )
+            return
+
+        model = load_base_model(
+            self.model_name,
+            torch_dtype=torch.float16,
+            gradient_checkpointing=True,
+            device=None,
+        )
+
+        if self.method == "lora":
             lcfg = self.variant["lora"]
             model = attach_lora(
                 model,
@@ -198,8 +235,19 @@ class SFTTrainer:
         wd = float(self.shared["training"]["weight_decay"])
         betas = tuple(self.shared["training"]["betas"])
         eps = float(self.shared["training"]["eps"])
+        use_8bit = self.method in {"full_ft", "full_ft_l2sp"} and self.device.type == "cuda"
         self.optimizer = build_optimizer(
-            self.model, lr=self.peak_lr, weight_decay=wd, betas=betas, eps=eps
+            self.model,
+            lr=self.peak_lr,
+            weight_decay=wd,
+            betas=betas,
+            eps=eps,
+            adam8bit=use_8bit,
+        )
+        print(
+            "OPTIMIZER",
+            {"class": type(self.optimizer).__name__, "adam8bit": use_8bit, "eps": eps},
+            flush=True,
         )
         self.scheduler = build_cosine_scheduler(
             self.optimizer, num_updates=self.num_updates, warmup_updates=self.warmup
@@ -299,8 +347,7 @@ class SFTTrainer:
                     break
 
                 batch = {k: v.to(self.device, non_blocking=True) for k, v in batch.items()}
-                # Autocast only when scaler path is active (FP32 adapters). Pure FP16
-                # full-FT already runs in half; nested autocast adds little and can bloat mem.
+                # Autocast + GradScaler for all CUDA methods (including FP16 full-FT).
                 amp_on = self.use_scaler and self.device.type == "cuda"
                 try:
                     amp_ctx = autocast("cuda", enabled=amp_on, dtype=torch.float16)
@@ -338,10 +385,13 @@ class SFTTrainer:
                     p.grad.detach().div_(total_tokens)
 
             sft_loss = float((token_loss_sum / token_count).item())
+            loss_nonfinite = not math.isfinite(sft_loss)
 
             if self.method == "full_ft_l2sp" and self.lambda_sp > 0:
                 omega = l2_sp_penalty(self.model, self.theta0, self.device)
                 omega_val = float(omega.detach().item())
+                if not math.isfinite(omega_val):
+                    loss_nonfinite = True
                 if self.use_scaler:
                     self.scaler.scale(self.lambda_sp * omega).backward()
                 else:
@@ -355,18 +405,21 @@ class SFTTrainer:
                 [p for p in self.model.parameters() if p.requires_grad],
                 self.max_grad_norm,
             )
-            found_inf = False
-            for p in self.model.parameters():
-                if p.grad is not None and not torch.isfinite(p.grad).all():
-                    found_inf = True
-                    break
+            found_inf = bool(loss_nonfinite)
+            if not found_inf:
+                for p in self.model.parameters():
+                    if p.grad is not None and not torch.isfinite(p.grad).all():
+                        found_inf = True
+                        break
             if found_inf:
                 self.skipped_updates += 1
+                self.consecutive_skips += 1
                 skipped = True
                 self.optimizer.zero_grad(set_to_none=True)
                 if self.use_scaler:
                     self.scaler.update()
             else:
+                self.consecutive_skips = 0
                 if self.use_scaler:
                     self.scaler.step(self.optimizer)
                     self.scaler.update()
@@ -387,25 +440,53 @@ class SFTTrainer:
                 "lr": lr,
                 "grad_norm": float(grad_norm) if not skipped else None,
                 "skipped": skipped,
+                "consecutive_skips": self.consecutive_skips,
                 "tokens_in_effective_batch": total_tokens,
             }
             if omega_val is not None:
                 record["omega"] = omega_val
                 record["lambda_omega"] = self.lambda_sp * omega_val
-                record["total_loss"] = sft_loss + self.lambda_sp * omega_val
+                record["total_loss"] = (
+                    (sft_loss + self.lambda_sp * omega_val)
+                    if math.isfinite(sft_loss) and math.isfinite(omega_val)
+                    else float("nan")
+                )
             self.metrics_logger.log(record)
 
+            if self.consecutive_skips >= self.max_consecutive_skips:
+                raise RuntimeError(
+                    f"Aborting {self.variant_name}: {self.consecutive_skips} consecutive "
+                    f"skipped/NaN updates (total skipped={self.skipped_updates}). "
+                    "Full-FT is numerically unstable; fix amp/scaler before retraining."
+                )
+
             if self.global_step % self.log_every == 0 or self.global_step in self.ckpt_updates:
-                pbar.set_postfix(loss=f"{sft_loss:.4f}", lr=f"{lr:.2e}")
+                pbar.set_postfix(
+                    loss=f"{sft_loss:.4f}" if math.isfinite(sft_loss) else "nan",
+                    lr=f"{lr:.2e}",
+                    skip=self.skipped_updates,
+                )
             pbar.update(1)
 
             if self.global_step in self.ckpt_updates:
+                # Never persist a NaN full-FT checkpoint (previous runs saved 100% NaN).
+                with torch.no_grad():
+                    for name, p in self.model.named_parameters():
+                        if p.is_floating_point() and not torch.isfinite(p).all():
+                            raise RuntimeError(
+                                f"Non-finite weight `{name}` at step {self.global_step}; "
+                                "refusing checkpoint save"
+                            )
                 ckpt_dir = (
                     self.dirs["checkpoints"]
                     / self.variant_name
                     / f"step_{self.global_step:04d}_ex{self.examples_seen}"
                 )
-                extra = {"skipped_updates": self.skipped_updates}
+                extra = {
+                    "skipped_updates": self.skipped_updates,
+                    "consecutive_skips": self.consecutive_skips,
+                    "use_scaler": self.use_scaler,
+                }
                 if self.method == "full_ft_l2sp" and self.theta0 is not None:
                     disp = full_model_displacement(self.model, self.theta0)
                     extra["l2_displacement"] = disp
@@ -434,6 +515,7 @@ class SFTTrainer:
                         )
                     except Exception as e:
                         extra["l2_displacement_error"] = str(e)
+                save_opt = self.method not in {"full_ft", "full_ft_l2sp"}
                 meta = save_training_checkpoint(
                     ckpt_dir,
                     model=self.model,
@@ -448,7 +530,15 @@ class SFTTrainer:
                     theta0_path=self.theta0_path,
                     oplora_meta=self.oplora_meta,
                     extra=extra,
+                    save_optimizer=save_opt,
                 )
+                if self.method in {"full_ft", "full_ft_l2sp"}:
+                    from src.train.checkpointing import prune_unkept_checkpoints
+
+                    prune_unkept_checkpoints(
+                        self.dirs["checkpoints"] / self.variant_name,
+                        set(self.ckpt_updates),
+                    )
                 self.resource_logger.log(
                     {
                         "event": "checkpoint",
@@ -466,6 +556,7 @@ class SFTTrainer:
                 / self.variant_name
                 / f"step_{self.global_step:04d}_ex{self.examples_seen}"
             )
+            save_opt = self.method not in {"full_ft", "full_ft_l2sp"}
             save_training_checkpoint(
                 ckpt_dir,
                 model=self.model,
@@ -480,7 +571,41 @@ class SFTTrainer:
                 theta0_path=self.theta0_path,
                 oplora_meta=self.oplora_meta,
                 extra={"skipped_updates": self.skipped_updates, "final": True},
+                save_optimizer=save_opt,
             )
+            if self.method in {"full_ft", "full_ft_l2sp"}:
+                from src.train.checkpointing import prune_unkept_checkpoints
+
+                prune_unkept_checkpoints(
+                    self.dirs["checkpoints"] / self.variant_name,
+                    set(self.ckpt_updates) | {self.global_step},
+                )
+
+        # Gate: Full-FT that emits "!!!!..." is useless for eval (prior NaN symptom).
+        if self.method in {"full_ft", "full_ft_l2sp"}:
+            try:
+                self.model.eval()
+                prompt = "Q: What is 2+2?\nA:"
+                enc = self.tokenizer(prompt, return_tensors="pt")
+                enc = {k: v.to(self.device) for k, v in enc.items()}
+                with torch.no_grad():
+                    out = self.model.generate(
+                        **enc,
+                        max_new_tokens=32,
+                        do_sample=False,
+                        pad_token_id=self.tokenizer.eos_token_id,
+                    )
+                text = self.tokenizer.decode(out[0], skip_special_tokens=True)
+                bang_frac = text.count("!") / max(len(text), 1)
+                print("FULL_FT_GEN_SMOKE", {"text": text[:200], "bang_frac": bang_frac}, flush=True)
+                if bang_frac > 0.5 or set(text.strip()) <= {"!"}:
+                    raise RuntimeError(
+                        f"Full-FT generation collapsed to bangs/garbage: {text[:120]!r}"
+                    )
+            except RuntimeError:
+                raise
+            except Exception as e:
+                print("FULL_FT_GEN_SMOKE_WARN", str(e), flush=True)
 
         elapsed = time.perf_counter() - start
         summary = {

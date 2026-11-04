@@ -1,0 +1,40 @@
+{
+  "condition": "lora_r16_final",
+  "checkpoint": "/kaggle/working/results/checkpoints/lora_r16/step_1250_ex40000",
+  "metrics": {
+    "hellaswag": {
+      "name": "hellaswag",
+      "alias": "hellaswag",
+      "sample_len": 10042,
+      "acc,none": 0.37651862178848833,
+      "acc_stderr,none": 0.004835222794006608,
+      "acc_norm,none": 0.4713204540928102,
+      "acc_norm_stderr,none": 0.004981566295189389
+    },
+    "boolq": {
+      "name": "boolq",
+      "alias": "boolq",
+      "sample_len": 3270,
+      "acc,none": 0.7143730886850153,
+      "acc_stderr,none": 0.007900501218318787
+    },
+    "arc_easy": {
+      "name": "arc_easy",
+      "alias": "arc_easy",
+      "sample_len": 2376,
+      "acc,none": 0.6658249158249159,
+      "acc_stderr,none": 0.00967910603291896,
+      "acc_norm,none": 0.6414141414141414,
+      "acc_norm_stderr,none": 0.009840882301225278
+    },
+    "gsm8k_cot": {
+      "name": "gsm8k_cot",
+      "alias": "gsm8k_cot",
+      "sample_len": 1319,
+      "exact_match,strict-match": 0.0,
+      "exact_match_stderr,strict-match": 0.0,
+      "exact_match,flexible-extract": 0.6141015921152388,
+      "exact_match_stderr,flexible-extract": 0.013409077471319175
+    }
+  }
+}

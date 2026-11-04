@@ -24,8 +24,24 @@ def build_param_groups(model, weight_decay: float = 0.01):
     ]
 
 
-def build_optimizer(model, lr: float, weight_decay: float = 0.01, betas=(0.9, 0.999), eps=1e-8):
+def build_optimizer(
+    model,
+    lr: float,
+    weight_decay: float = 0.01,
+    betas=(0.9, 0.999),
+    eps=1e-8,
+    *,
+    adam8bit: bool = False,
+):
     groups = build_param_groups(model, weight_decay=weight_decay)
+    if adam8bit:
+        try:
+            import bitsandbytes as bnb
+        except ImportError as e:  # pragma: no cover
+            raise ImportError(
+                "adam8bit requested but bitsandbytes is not installed"
+            ) from e
+        return bnb.optim.AdamW8bit(groups, lr=lr, betas=betas, eps=eps)
     return AdamW(groups, lr=lr, betas=betas, eps=eps)
 
 
@@ -43,11 +59,14 @@ def build_cosine_scheduler(optimizer, num_updates: int, warmup_updates: int) -> 
 
 
 def collect_starting_point(model) -> dict[str, torch.Tensor]:
-    """Detach CPU copies of parameters for L2-SP (same dtype as model; keeps RAM down)."""
+    """Detach CPU copies of parameters for L2-SP (FP16 on CPU to keep host RAM down)."""
     ref = {}
     for name, param in model.named_parameters():
-        # Keep model dtype (FP16 for full FT) — casting everything to FP32 doubles RAM.
-        ref[name] = param.detach().cpu().clone()
+        # Store FP16 on CPU regardless of train dtype (full-FT AMP uses FP32 masters).
+        t = param.detach().cpu()
+        if t.is_floating_point() and t.dtype != torch.float16:
+            t = t.half()
+        ref[name] = t.contiguous()
     return ref
 
 

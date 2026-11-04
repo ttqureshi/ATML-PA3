@@ -1,0 +1,15 @@
+{
+  "variant": "lora_r16",
+  "method": "lora",
+  "steps": 1250,
+  "examples_seen": 40000,
+  "train_seconds": 9923.135119251001,
+  "peak_mem_bytes": 9882354688,
+  "peak_mem_gb": 9.203660011291504,
+  "trainable_params": {
+    "trainable": 10092544,
+    "total": 606142464,
+    "adapter": 10092544
+  },
+  "skipped_updates": 9
+}

@@ -38,6 +38,10 @@ task1/kaggle_pulls/
 !task1/results/README.md
 !task1/results/.gitkeep
 
+# Slim writeup evidence (tables/figures/metrics summaries) — keep tracked
+!task1/report_bundle/
+!task1/report_bundle/**
+
 # Large / generated Kaggle packaging temps
 *.pt
 *.safetensors

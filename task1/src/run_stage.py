@@ -33,21 +33,28 @@ def _run(module: str, extra: list[str] | None = None) -> None:
     art.mkdir(parents=True, exist_ok=True)
     log_path = art / "subprocess_last.log"
     try:
+        # Stream child output live to Kaggle logs AND to subprocess_last.log.
+        # (Previously we redirected only to a file, so Logs tab looked frozen for hours.)
+        env = os.environ.copy()
+        env["PYTHONUNBUFFERED"] = "1"
         with open(log_path, "w", encoding="utf-8") as logf:
-            proc = subprocess.run(
+            proc = subprocess.Popen(
                 cmd,
                 cwd=str(ROOT),
-                stdout=logf,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                bufsize=1,
+                env=env,
             )
-        # Also echo the log to notebook stdout for Kaggle visibility
-        try:
-            print(log_path.read_text(encoding="utf-8", errors="replace")[-20000:], flush=True)
-        except Exception:
-            pass
-        if proc.returncode != 0:
-            raise subprocess.CalledProcessError(proc.returncode, cmd)
+            assert proc.stdout is not None
+            for line in proc.stdout:
+                logf.write(line)
+                logf.flush()
+                print(line, end="", flush=True)
+            rc = proc.wait()
+        if rc != 0:
+            raise subprocess.CalledProcessError(rc, cmd)
     except Exception:
         import traceback
         detail = ""
@@ -79,11 +86,11 @@ def main() -> None:
         lora_txt = (_P(ROOT) / "src" / "models" / "lora.py").read_text(encoding="utf-8")
         fp = {
             "stage": stage,
-            # Adapter-only FP32 cast is intentional; flag only a full-model float() sweep.
-            "has_full_model_fp32_cast": "for p in model.parameters():\n            p.data = p.data.float()"
-            in trainer_txt,
+            "full_ft_uses_scaler": 'self.use_scaler = self.device.type == "cuda"' in trainer_txt,
+            "full_ft_fp32_masters": "torch_dtype=torch.float32" in trainer_txt,
+            "has_skip_abort": "max_consecutive_skips" in trainer_txt,
             "has_torchao_neutralize": "_neutralize_torchao_check" in lora_txt,
-            "smoke_lora_only": "LoRA-only smoke"
+            "has_smoke_full_ft": "smoke_full_ft"
             in (_P(ROOT) / "src" / "run_stage.py").read_text(encoding="utf-8"),
         }
         out = _P(args.artifacts_root)
@@ -118,7 +125,7 @@ def main() -> None:
         smoke_n = max(64, int(args.smoke_steps) * 32)
         _run("src.data.prepare_metamath", art + ["--num-examples", str(smoke_n)])
         # LoRA-only smoke keeps artifacts small enough to download; Full FT is validated
-        # by the dedicated train:full_ft kernel.
+        # by the dedicated smoke_full_ft / train:full_ft kernels.
         _run(
             "src.train.run_train",
             ["--variant", "lora_r4", "--smoke-steps", str(args.smoke_steps)] + art,
@@ -130,6 +137,66 @@ def main() -> None:
         if ckpt.exists():
             shutil.rmtree(ckpt, ignore_errors=True)
         print("SMOKE OK", flush=True)
+    elif stage == "smoke_full_ft":
+        # Required gate before burning ~3h×2 on full_ft / full_ft_l2sp retrains.
+        steps = max(20, int(args.smoke_steps))
+        smoke_n = max(64, steps * 32)
+        _run("src.data.prepare_metamath", art + ["--num-examples", str(smoke_n)])
+        _run(
+            "src.train.run_train",
+            ["--variant", "full_ft", "--smoke-steps", str(steps)] + art,
+        )
+        # Assert finite loss / no skips from the metrics jsonl.
+        import json as _json
+        from pathlib import Path as _P
+        metrics = _P(args.artifacts_root) / "logs" / "train_metrics_full_ft.jsonl"
+        summary = _P(args.artifacts_root) / "resources" / "train_summary_full_ft.json"
+        if not metrics.exists():
+            raise SystemExit(f"smoke_full_ft missing metrics: {metrics}")
+        rows = [
+            _json.loads(line)
+            for line in metrics.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if not rows:
+            raise SystemExit("smoke_full_ft empty metrics")
+        import math as _math
+        bad_loss = [
+            r for r in rows if not _math.isfinite(float(r.get("sft_loss", float("nan"))))
+        ]
+        # GradScaler may skip a few early steps while adjusting scale; require the
+        # tail of the run to be clean and overall skip rate to stay small.
+        tail = rows[-max(10, len(rows) // 2) :]
+        tail_skips = sum(1 for r in tail if r.get("skipped"))
+        skips = sum(1 for r in rows if r.get("skipped"))
+        skipped_total = 0
+        if summary.exists():
+            skipped_total = int(
+                _json.loads(summary.read_text(encoding="utf-8")).get("skipped_updates", 0)
+            )
+        print(
+            "SMOKE_FULL_FT_CHECK",
+            {
+                "steps": len(rows),
+                "skips": skips,
+                "tail_skips": tail_skips,
+                "skipped_updates": skipped_total,
+                "bad_loss": len(bad_loss),
+                "last_loss": rows[-1].get("sft_loss"),
+            },
+            flush=True,
+        )
+        if bad_loss or tail_skips > 0 or skips > max(5, len(rows) // 5):
+            raise SystemExit(
+                f"smoke_full_ft FAILED: skips={skips} tail_skips={tail_skips} "
+                f"skipped_updates={skipped_total} nonfinite_loss_rows={len(bad_loss)}"
+            )
+        # Drop bulky smoke checkpoints; keep logs/metrics only.
+        import shutil
+        ckpt = _P(args.artifacts_root) / "checkpoints"
+        if ckpt.exists():
+            shutil.rmtree(ckpt, ignore_errors=True)
+        print("SMOKE_FULL_FT OK", flush=True)
     elif stage == "pipeline_prep":
         _run("src.data.prepare_metamath", art)
         _run("src.diagnostics.probe_set", art)
@@ -137,6 +204,17 @@ def main() -> None:
         _run("src.analysis.run_analysis", art)
     elif stage == "pipeline_post":
         _run("src.eval.run_eval", ["--condition", "all_required"] + art)
+        _run("src.diagnostics.run_diagnostics", art)
+        _run("src.qualitative.run_qualitative", art)
+        _run("src.analysis.run_analysis", art)
+    elif stage == "post_analyze":
+        # After per-condition eval kernels: diagnostics + qualitative + tables.
+        # Probe set is required by diagnostics; recreate if eval-only kernels didn't ship it.
+        from pathlib import Path as _P
+        probe = _P(args.artifacts_root) / "raw" / "probe" / "activation_probe_set.json"
+        if not probe.exists():
+            print("probe set missing; generating", flush=True)
+            _run("src.diagnostics.probe_set", art)
         _run("src.diagnostics.run_diagnostics", art)
         _run("src.qualitative.run_qualitative", art)
         _run("src.analysis.run_analysis", art)

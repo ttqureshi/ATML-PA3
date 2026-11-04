@@ -1,0 +1,14 @@
+{
+  "variant": "full_ft",
+  "method": "full_ft",
+  "steps": 1250,
+  "examples_seen": 40000,
+  "train_seconds": 10899.970172446001,
+  "peak_mem_bytes": 9049674240,
+  "peak_mem_gb": 8.428165912628174,
+  "trainable_params": {
+    "trainable": 596049920,
+    "total": 596049920
+  },
+  "skipped_updates": 1249
+}

@@ -1,0 +1,11 @@
+{
+  "step": 1250,
+  "examples_seen": 40000,
+  "variant_name": "full_ft",
+  "method": "full_ft",
+  "model_name": "Qwen/Qwen3-0.6B",
+  "checkpoint_dir": "/kaggle/working/results/checkpoints/full_ft/step_1250_ex40000",
+  "size_bytes": 1503301674,
+  "save_seconds": 3.0714116519993695,
+  "saved_optimizer": false
+}

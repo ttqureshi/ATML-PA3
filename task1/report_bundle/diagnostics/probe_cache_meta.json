@@ -1,0 +1,9 @@
+{
+  "num_prompts": 64,
+  "layers": [
+    0,
+    13,
+    27
+  ],
+  "hidden": 3072
+}

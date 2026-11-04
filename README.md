@@ -9,7 +9,9 @@ Public code repository for Programming Assignment 3.
 
 | Path | Contents |
 |------|----------|
-| `task1/` | Task 1 — LLM fine-tuning (Full FT, L2-SP, LoRA, OPLoRA) |
+| `task1/` | Task 1 — LLM fine-tuning (Full FT, L2-SP, LoRA, OPLoRA) — **COMPLETE** |
+| `task1/README.md` | Writeup / reproduction handoff (read this for report evidence) |
+| `task1/report_bundle/` | Committed tables, figures, metrics, diagnostics for the PDF |
 | `task1/configs/` | Shared training recipe + per-variant configs |
 | `task1/src/` | Data prep, trainer, eval, diagnostics, qualitative, analysis |
 | `task1/kaggle/` | Kaggle kernel metadata + notebooks |

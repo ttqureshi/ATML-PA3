@@ -1,0 +1,40 @@
+{
+  "condition": "full_ft_final",
+  "checkpoint": "/content/atml_results/checkpoints/full_ft/step_1250_ex40000",
+  "metrics": {
+    "hellaswag": {
+      "name": "hellaswag",
+      "alias": "hellaswag",
+      "sample_len": 10042,
+      "acc,none": 0.3730332603067118,
+      "acc_stderr,none": 0.004826224784850233,
+      "acc_norm,none": 0.46106353316072496,
+      "acc_norm_stderr,none": 0.004974628903829016
+    },
+    "boolq": {
+      "name": "boolq",
+      "alias": "boolq",
+      "sample_len": 3270,
+      "acc,none": 0.6296636085626911,
+      "acc_stderr,none": 0.008445882436783896
+    },
+    "arc_easy": {
+      "name": "arc_easy",
+      "alias": "arc_easy",
+      "sample_len": 2376,
+      "acc,none": 0.6641414141414141,
+      "acc_stderr,none": 0.009691180932083652,
+      "acc_norm,none": 0.6380471380471381,
+      "acc_norm_stderr,none": 0.009860991466688474
+    },
+    "gsm8k_cot": {
+      "name": "gsm8k_cot",
+      "alias": "gsm8k_cot",
+      "sample_len": 1319,
+      "exact_match,strict-match": 0.0,
+      "exact_match_stderr,strict-match": 0.0,
+      "exact_match,flexible-extract": 0.6429112964366944,
+      "exact_match_stderr,flexible-extract": 0.013197931775445206
+    }
+  }
+}

@@ -66,8 +66,14 @@ def generate_one(model, tokenizer, prompt: dict, max_new_tokens: int, device) ->
         input_ids = tokenizer.apply_chat_template(
             messages, tokenize=True, add_generation_prompt=True, return_tensors="pt"
         )
-    if not torch.is_tensor(input_ids):
-        input_ids = torch.tensor([input_ids], dtype=torch.long)
+    if isinstance(input_ids, str):
+        input_ids = tokenizer(input_ids, return_tensors="pt").input_ids
+    elif hasattr(input_ids, "input_ids"):
+        input_ids = input_ids.input_ids
+    elif not torch.is_tensor(input_ids):
+        input_ids = torch.as_tensor(input_ids, dtype=torch.long)
+    if input_ids.dim() == 1:
+        input_ids = input_ids.unsqueeze(0)
     input_ids = input_ids.to(device)
     out = model.generate(
         input_ids=input_ids,

@@ -159,8 +159,15 @@ def compare_merged_unmerged_logits(
         ids = tokenizer.apply_chat_template(
             messages, tokenize=True, add_generation_prompt=True, return_tensors="pt"
         )
-    if not torch.is_tensor(ids):
-        ids = torch.tensor([ids], dtype=torch.long)
+    # Newer transformers may return str / BatchEncoding instead of a Tensor.
+    if isinstance(ids, str):
+        ids = tokenizer(ids, return_tensors="pt").input_ids
+    elif hasattr(ids, "input_ids"):
+        ids = ids.input_ids
+    elif not torch.is_tensor(ids):
+        ids = torch.as_tensor(ids, dtype=torch.long)
+    if ids.dim() == 1:
+        ids = ids.unsqueeze(0)
     ids = ids.to(device)
 
     with torch.no_grad():

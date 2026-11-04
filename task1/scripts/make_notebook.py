@@ -3,12 +3,36 @@ from __future__ import annotations
 import base64
 import io
 import json
+import os
 import uuid
 import zipfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Train outputs that pipeline_post must mount (owner account that ran the trains).
+TRAIN_KERNEL_SOURCES = [
+    "mtayyabtahir/atml-pa3-t1-train-fullft",
+    "mtayyabtahir/atml-pa3-t1-train-full-ft-l2sp",
+    "mtayyabtahir/atml-pa3-t1-train-lora-r4",
+    "mtayyabtahir/atml-pa3-t1-train-lora-r16",
+    "mtayyabtahir/atml-pa3-t1-train-oplora",
+]
+
+
+def current_kaggle_user() -> str:
+    for key in ("ATML_KAGGLE_USER", "KAGGLE_USERNAME"):
+        val = os.environ.get(key, "").strip()
+        if val:
+            return val
+    cred = Path.home() / ".kaggle" / "credentials.json"
+    if cred.exists():
+        try:
+            return str(json.loads(cred.read_text(encoding="utf-8")).get("username") or "").strip()
+        except Exception:
+            pass
+    return "mtayyabtahir"
 
 
 def _cid() -> str:
@@ -41,6 +65,7 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
                 f"# {title}\n",
                 f"\nStage: `{stage}`\n",
                 "\nSelf-contained ATML PA3 Task 1 runner. Source is embedded in the notebook (and also attached as a dataset when available). Artifacts go to `/kaggle/working/results`.\n",
+                "\nCODE_FIX: gsm8k-thinking-disable-v2 (Qwen3 enable_thinking=False via tokenizer patch).\n",
             ],
         },
         {
@@ -68,8 +93,10 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
                 "assert (dst/'src').is_dir() and (dst/'configs').is_dir(), list(dst.iterdir())\n",
                 "# Prove which smoke path is embedded\n",
                 "smoke_src = (dst/'src'/'run_stage.py').read_text(encoding='utf-8')\n",
+                "eval_src = (dst/'src'/'eval'/'run_eval.py').read_text(encoding='utf-8')\n",
                 "print('SMOKE_HAS_LORA_ONLY', 'LoRA-only smoke' in smoke_src or 'lora_r4' in smoke_src and 'full_ft' in smoke_src)\n",
                 "print('TRAINER_HAS_NO_FP32_CAST', 'p.data = p.data.float()' not in (dst/'src'/'train'/'trainer.py').read_text(encoding='utf-8'))\n",
+                "print('EVAL_HAS_THINKING_PATCH', '_patch_tokenizer_disable_thinking' in eval_src)\n",
                 "os.chdir(dst)\n",
                 "sys.path.insert(0, str(dst))\n",
                 "print('CODE_ROOT', dst)\n",
@@ -83,20 +110,73 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
             "execution_count": None,
             "outputs": [],
             "source": [
-                "import torch, subprocess, sys\n",
+                "import torch, subprocess, sys, time\n",
                 "print('torch', torch.__version__, 'cuda', torch.cuda.is_available())\n",
                 "if torch.cuda.is_available():\n",
                 "    print(torch.cuda.get_device_name(0), 'VRAM_GiB', round(torch.cuda.get_device_properties(0).total_memory/2**30, 2))\n",
                 "# Kaggle's torchao (0.10) is incompatible with recent peft, which raises\n",
                 "# ImportError during LoRA inject instead of skipping torchao dispatch.\n",
                 "subprocess.call([sys.executable, '-m', 'pip', 'uninstall', '-y', 'torchao'])\n",
+                "assert torch.cuda.is_available(), 'GPU not available — refusing to burn a CPU session'\n",
                 "pkgs = [\n",
                 "    'datasets', 'peft==0.14.0', 'accelerate', 'sentencepiece', 'pyyaml',\n",
                 "    'lm-eval', 'einops', 'safetensors', 'matplotlib', 'seaborn', 'pandas', 'tabulate',\n",
                 "]\n",
-                "subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-q', '--upgrade', 'transformers>=4.51.0'] + pkgs)\n",
+                "def _pip(extra):\n",
+                "    for attempt in range(5):\n",
+                "        rc = subprocess.call([sys.executable, '-m', 'pip', 'install', '-q', '--upgrade'] + extra)\n",
+                "        if rc == 0:\n",
+                "            return\n",
+                "        print('pip retry', attempt+1, 'rc', rc, flush=True)\n",
+                "        time.sleep(10)\n",
+                "    raise SystemExit('pip install failed after retries')\n",
+                "_pip(['transformers>=4.51.0'] + pkgs)\n",
             ],
         },
+    ]
+    if stage == "pipeline_post":
+        cells.append(
+            {
+                "cell_type": "code",
+                "id": _cid(),
+                "metadata": {},
+                "execution_count": None,
+                "outputs": [],
+                "source": [
+                    "import pathlib, shutil, json\n",
+                    "# Stage checkpoints from attached datasets / kernel outputs.\n",
+                    "dst_ck = pathlib.Path('/kaggle/working/results/checkpoints')\n",
+                    "dst_ck.mkdir(parents=True, exist_ok=True)\n",
+                    "src_root = pathlib.Path('/kaggle/input')\n",
+                    "copied = []\n",
+                    "for src in sorted(src_root.iterdir()) if src_root.exists() else []:\n",
+                    "    candidates = [src / 'results' / 'checkpoints', src / 'checkpoints']\n",
+                    "    ck = next((p for p in candidates if p.is_dir()), None)\n",
+                    "    if ck is None:\n",
+                    "        print('no checkpoints under', src, flush=True)\n",
+                    "        continue\n",
+                    "    for variant in sorted(ck.iterdir()):\n",
+                    "        if not variant.is_dir():\n",
+                    "            continue\n",
+                    "        out = dst_ck / variant.name\n",
+                    "        if out.exists():\n",
+                    "            shutil.rmtree(out)\n",
+                    "        shutil.copytree(variant, out)\n",
+                    "        steps = sorted(p.name for p in out.glob('step_*'))\n",
+                    "        copied.append({'variant': variant.name, 'from': str(src.name), 'steps': steps})\n",
+                    "        print('staged', variant.name, 'steps', steps, 'from', src.name, flush=True)\n",
+                    "pathlib.Path('/kaggle/working/results/checkpoint_stage_manifest.json').write_text(json.dumps(copied, indent=2))\n",
+                    "need = {'full_ft', 'full_ft_l2sp', 'lora_r4', 'lora_r16', 'oplora'}\n",
+                    "have = {p.name for p in dst_ck.iterdir()} if dst_ck.exists() else set()\n",
+                    "missing = sorted(need - have)\n",
+                    "print('checkpoint_variants', sorted(have), 'missing', missing, flush=True)\n",
+                    "if missing:\n",
+                    "    raise SystemExit(f'Missing checkpoint variants for pipeline_post: {missing}')\n",
+                ],
+            }
+        )
+    cells.extend(
+        [
         {
             "cell_type": "code",
             "id": _cid(),
@@ -149,14 +229,21 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
                 "print(status.read_text() if status.exists() else 'no status')\n",
             ],
         },
-    ]
+        ]
+    )
     return {
         "cells": cells,
         "metadata": {
             "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
             "language_info": {"name": "python"},
             "kaggle": {
-                "accelerator": "nvidiaTeslaT4",
+                # ttqureshi UI only offers "GPU T4 x2" (no single-T4). Requesting
+                # single T4 via CLI caused CPU fallback. Use T4x2 on that account.
+                "accelerator": (
+                    "nvidiaTeslaT4"
+                    if current_kaggle_user() == "mtayyabtahir"
+                    else "gpu"
+                ),
                 "isGpuEnabled": True,
                 "isInternetEnabled": True,
                 "language": "python",
@@ -169,6 +256,8 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
 
 
 def main() -> None:
+    user = current_kaggle_user()
+    print("kaggle_user", user)
     code_b64 = build_code_zip_b64()
     print("embedded_code_bytes", len(base64.b64decode(code_b64)))
     # folder_name -> (stage, title/slug used by Kaggle)
@@ -192,8 +281,18 @@ def main() -> None:
         nb = build_notebook(stage, title, code_b64)
         code_file = f"{folder_name}.ipynb"
         (folder / code_file).write_text(json.dumps(nb, indent=1), encoding="utf-8")
+        kernel_sources: list[str] = []
+        dataset_sources: list[str] = []
+        if stage == "pipeline_post":
+            # Checkpoints exported from mtayyabtahir trains into ttqureshi datasets.
+            # Do NOT attach train kernels (avoids cross-account / re-train mess).
+            dataset_sources = [
+                f"{user}/atml-pa3-t1-ckpts-fullft",
+                f"{user}/atml-pa3-t1-ckpts-l2sp",
+                f"{user}/atml-pa3-t1-ckpts-adapters",
+            ]
         meta = {
-            "id": f"mtayyabtahir/{slug}",
+            "id": f"{user}/{slug}",
             "title": title,
             "code_file": code_file,
             "language": "python",
@@ -203,14 +302,20 @@ def main() -> None:
             "enable_tpu": False,
             "enable_internet": True,
             "keywords": [],
-            "dataset_sources": [],
-            "kernel_sources": [],
+            "dataset_sources": dataset_sources,
+            "kernel_sources": kernel_sources,
             "competition_sources": [],
             "model_sources": [],
-            "machine_shape": "NvidiaTeslaT4",
+            # mtayyab: single T4. ttqureshi: only T4 x2 is offered in the UI; omitting
+            # machine_shape / using GPU lets Kaggle attach the dual-T4 accelerator.
+            **(
+                {"machine_shape": "NvidiaTeslaT4"}
+                if user == "mtayyabtahir"
+                else {}
+            ),
         }
         (folder / "kernel-metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
-        print("wrote", folder)
+        print("wrote", folder, "sources", kernel_sources)
 
 
 if __name__ == "__main__":

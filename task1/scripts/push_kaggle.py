@@ -9,8 +9,26 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-USER = "mtayyabtahir"
 DATASET_SLUG = "atml-pa3-task1-code"
+
+
+def current_kaggle_user() -> str:
+    import os
+
+    for key in ("ATML_KAGGLE_USER", "KAGGLE_USERNAME"):
+        val = os.environ.get(key, "").strip()
+        if val:
+            return val
+    cred = Path.home() / ".kaggle" / "credentials.json"
+    if cred.exists():
+        try:
+            return str(json.loads(cred.read_text(encoding="utf-8")).get("username") or "").strip()
+        except Exception:
+            pass
+    return "mtayyabtahir"
+
+
+USER = current_kaggle_user()
 
 
 def run(cmd: list[str]) -> None:

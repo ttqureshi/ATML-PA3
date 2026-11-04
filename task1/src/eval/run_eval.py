@@ -68,6 +68,25 @@ def materialize_hf_model_dir(
     return out_dir
 
 
+def _patch_tokenizer_disable_thinking(tokenizer) -> None:
+    """Force enable_thinking=False on every apply_chat_template call (Qwen3)."""
+    if getattr(tokenizer, "_atml_thinking_patched", False):
+        return
+    orig = tokenizer.apply_chat_template
+
+    def _wrapped(*args, **kwargs):
+        # Force off — setdefault is not enough if callers pass enable_thinking=True.
+        kwargs["enable_thinking"] = False
+        try:
+            return orig(*args, **kwargs)
+        except TypeError:
+            kwargs.pop("enable_thinking", None)
+            return orig(*args, **kwargs)
+
+    tokenizer.apply_chat_template = _wrapped  # type: ignore[method-assign]
+    tokenizer._atml_thinking_patched = True
+
+
 def _persist_eval_blob(out_dir: Path, blob: dict[str, Any] | None, combined_results: dict, samples: dict) -> None:
     if not blob:
         return
@@ -119,24 +138,29 @@ def run_lm_eval(model_path: str, out_dir: Path, batch_size: str | int = "auto") 
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-    # Recent transformers+lm-eval stacks forward unknown HFLM kwargs into
-    # Qwen3ForCausalLM.__init__ (max_new_tokens / apply_chat_template). Set those
-    # as attributes / gen_kwargs instead of constructor kwargs.
+    # Do NOT set lm.apply_chat_template = True — that overwrites HFLM's method with a
+    # bool and crashes lm-eval fewshot_context (partial(chat_template, ...) TypeError).
+    # Pass apply_chat_template only to simple_evaluate; keep gen settings in gen_kwargs.
+    #
+    # CRITICAL: Qwen3's default chat template enables "thinking" mode. lm-eval's
+    # apply_chat_template=True path does NOT pass enable_thinking=False, so each
+    # GSM8K sample can emit a long <think>…</think> block up to max_new_tokens
+    # (1024). That alone can turn a ~1h baseline eval into 6–10h+. Patch the
+    # tokenizer so thinking stays off (matches shared.yaml enable_thinking: false).
+    # batch>1 cuts wall-clock a lot on T4; keep gen length at assignment 1024.
+    gsm_batch = 4
     lm_gen = HFLM(
         pretrained=model_path,
         dtype="float16",
         trust_remote_code=True,
-        batch_size=1,
+        batch_size=gsm_batch,
     )
-    lm_gen.apply_chat_template = True
-    if hasattr(lm_gen, "chat_template"):
-        # leave tokenizer template as-is; flag only controls prompting path
-        pass
+    _patch_tokenizer_disable_thinking(lm_gen.tokenizer)
     gsm_results = evaluator.simple_evaluate(
         model=lm_gen,
         tasks=["gsm8k_cot"],
         num_fewshot=0,
-        batch_size=1,
+        batch_size=gsm_batch,
         log_samples=True,
         apply_chat_template=True,
         gen_kwargs={"do_sample": False, "temperature": 0.0, "max_new_tokens": 1024},
@@ -180,7 +204,11 @@ def evaluate_condition(
         )
         write_json(out_dir / "merge_check.json", merge_report)
 
-    merged_dir = out_dir / "hf_model"
+    # Keep metrics/samples on Drive (out_dir), but run generation from local SSD.
+    # Loading/generating via Drive FUSE on Colab can stretch GSM8K from ~1.5h to multi-hour hangs.
+    import os
+    local_root = Path(os.environ.get("ATML_LOCAL_MODEL_ROOT", "/content/eval_hf_models"))
+    merged_dir = local_root / condition
     materialize_hf_model_dir(
         model_name=model_name,
         method=spec["method"],

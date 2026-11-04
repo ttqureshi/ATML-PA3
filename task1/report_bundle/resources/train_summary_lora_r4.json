@@ -1,0 +1,15 @@
+{
+  "variant": "lora_r4",
+  "method": "lora",
+  "steps": 1250,
+  "examples_seen": 40000,
+  "train_seconds": 9759.166478715999,
+  "peak_mem_bytes": 9761244160,
+  "peak_mem_gb": 9.090867042541504,
+  "trainable_params": {
+    "trainable": 2523136,
+    "total": 598573056,
+    "adapter": 2523136
+  },
+  "skipped_updates": 9
+}

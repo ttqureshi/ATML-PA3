@@ -37,6 +37,24 @@ def prune_old_trainer_states(variant_ckpt_root: Path, keep_dir: Path) -> None:
                     pass
 
 
+def prune_unkept_checkpoints(variant_ckpt_root: Path, keep_steps: set[int]) -> None:
+    """Remove whole step_* dirs not in keep_steps (Kaggle output quota / downloadability)."""
+    if not variant_ckpt_root.exists():
+        return
+    for d in list(variant_ckpt_root.glob("step_*")):
+        try:
+            step = int(d.name.split("_")[1])
+        except (IndexError, ValueError):
+            continue
+        if step in keep_steps:
+            continue
+        try:
+            shutil.rmtree(d)
+            print(f"PRUNED_CKPT {d}", flush=True)
+        except OSError as e:
+            print(f"PRUNE_FAIL {d} {e}", flush=True)
+
+
 def save_training_checkpoint(
     out_dir: Path,
     *,
@@ -82,20 +100,42 @@ def save_training_checkpoint(
             with open(model_dir / "oplora_meta.json", "w", encoding="utf-8") as f:
                 json.dump(oplora_meta, f, indent=2)
     else:
-        # Serialize full-FT weights as FP16 for disk, but restore FP32 master
-        # weights in-place so GradScaler training can continue after the save.
+        # Full-FT path: never mutate live training tensors in-place (half()/float()
+        # permanently truncates FP32 masters and previously risked dtype corruption).
+        # Build a CPU FP16 state_dict copy and hand it to HF save_pretrained.
         was_training = model.training
         model.eval()
-        restored = []
         try:
-            for p in model.parameters():
-                if p.is_floating_point() and p.dtype != torch.float16:
-                    restored.append(p)
-                    p.data = p.data.half()
-            model.save_pretrained(model_dir, safe_serialization=True)
+            cpu_half = {}
+            for k, v in model.state_dict().items():
+                if torch.is_tensor(v) and v.is_floating_point():
+                    t = v.detach()
+                    if not torch.isfinite(t).all():
+                        raise RuntimeError(
+                            f"Refusing to save non-finite full-FT weights at key={k}"
+                        )
+                    cpu_half[k] = t.to(dtype=torch.float16, device="cpu").contiguous()
+                elif torch.is_tensor(v):
+                    cpu_half[k] = v.detach().to("cpu").contiguous()
+                else:
+                    cpu_half[k] = v
+            model.save_pretrained(
+                model_dir,
+                state_dict=cpu_half,
+                safe_serialization=True,
+            )
+            del cpu_half
+            # HF copies live-model config (FP32 masters). Weights on disk are FP16.
+            cfg_path = model_dir / "config.json"
+            if cfg_path.exists():
+                with open(cfg_path, encoding="utf-8") as f:
+                    cfg = json.load(f)
+                if cfg.get("dtype") not in {"float16", "fp16"}:
+                    cfg["dtype"] = "float16"
+                    cfg["torch_dtype"] = "float16"
+                    with open(cfg_path, "w", encoding="utf-8") as f:
+                        json.dump(cfg, f, indent=2)
         finally:
-            for p in restored:
-                p.data = p.data.float()
             if was_training:
                 model.train()
 

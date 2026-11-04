@@ -1,0 +1,11 @@
+{
+  "step": 1250,
+  "examples_seen": 40000,
+  "variant_name": "lora_r4",
+  "method": "lora",
+  "model_name": "Qwen/Qwen3-0.6B",
+  "checkpoint_dir": "/kaggle/working/results/checkpoints/lora_r4/step_1250_ex40000",
+  "size_bytes": 30675459,
+  "save_seconds": 0.19893045599928882,
+  "saved_optimizer": true
+}

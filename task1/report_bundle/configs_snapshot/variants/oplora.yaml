@@ -1,0 +1,20 @@
+name: oplora
+method: oplora
+peak_lr: 2.0e-4
+lambda_sp: 0.0
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+oplora:
+  protection_rank_k: 128
+evaluate_at: [final]

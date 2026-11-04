@@ -1,0 +1,11 @@
+{
+  "step": 1250,
+  "examples_seen": 40000,
+  "variant_name": "oplora",
+  "method": "oplora",
+  "model_name": "Qwen/Qwen3-0.6B",
+  "checkpoint_dir": "/kaggle/working/results/checkpoints/oplora/step_1250_ex40000",
+  "size_bytes": 808414924,
+  "save_seconds": 1.5287562220000837,
+  "saved_optimizer": true
+}

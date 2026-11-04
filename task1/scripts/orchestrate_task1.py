@@ -14,10 +14,28 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-USER = "mtayyabtahir"
+
+
+def current_kaggle_user() -> str:
+    import os
+
+    for key in ("ATML_KAGGLE_USER", "KAGGLE_USERNAME"):
+        val = os.environ.get(key, "").strip()
+        if val:
+            return val
+    cred = Path.home() / ".kaggle" / "credentials.json"
+    if cred.exists():
+        try:
+            return str(json.loads(cred.read_text(encoding="utf-8")).get("username") or "").strip()
+        except Exception:
+            pass
+    return "mtayyabtahir"
+
+
+USER = current_kaggle_user()
 MAX_SLOTS = 2
 # Bump when a real training fix must replace a failed kernel once (not blind OOM loops).
-CODE_FIX_ID = "fp16-noscaler-v1"
+CODE_FIX_ID = "gsm8k-thinking-disable-v2"
 
 # folder, live slug, is_gate
 JOBS = [
@@ -67,8 +85,60 @@ def push_folder(folder: str) -> None:
     run(["kaggle", "kernels", "push", "-p", str(ROOT / "kaggle" / "kernels" / folder)])
 
 
+def push_cpu_kill(slug: str, folder: str) -> None:
+    """Cancel a wasted GPU session for an already-done train."""
+    path = ROOT / "kaggle" / "kernels" / folder
+    path.mkdir(parents=True, exist_ok=True)
+    code_file = f"{folder}.ipynb"
+    nb = {
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}
+        },
+        "cells": [
+            {
+                "cell_type": "code",
+                "metadata": {},
+                "execution_count": None,
+                "outputs": [],
+                "source": [f"print('ORCH_KILL: {slug} already done; releasing GPU')\n"],
+            }
+        ],
+    }
+    (path / code_file).write_text(json.dumps(nb, indent=1), encoding="utf-8")
+    meta = {
+        "id": f"{USER}/{slug}",
+        "title": slug,
+        "code_file": code_file,
+        "language": "python",
+        "kernel_type": "notebook",
+        "is_private": True,
+        "enable_gpu": False,
+        "enable_tpu": False,
+        "enable_internet": True,
+        "keywords": [],
+        "dataset_sources": [],
+        "kernel_sources": [],
+        "competition_sources": [],
+        "model_sources": [],
+    }
+    (path / "kernel-metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    push_folder(folder)
+    print("ALERT done_job_was_running — pushed CPU kill for", slug, flush=True)
+
+
 def pull_small(slug: str, dest: Path) -> None:
     dest.mkdir(parents=True, exist_ok=True)
+    # Drop stale status files so a timed-out pull cannot fake SUCCESS/FAIL.
+    for stale in (
+        dest / "results" / "stage_status.json",
+        dest / "results" / "failure.txt",
+    ):
+        try:
+            stale.unlink()
+        except OSError:
+            pass
     # Prefer not to hang forever on multi-GB checkpoints.
     subprocess.call(
         ["kaggle", "kernels", "output", f"{USER}/{slug}", "-p", str(dest)],
@@ -95,6 +165,7 @@ def save_state(
     failed: set[str],
     in_flight: dict[str, str],
     retries: dict[str, int] | None = None,
+    force_rerun: set[str] | None = None,
 ) -> None:
     blob: dict[str, Any] = {
         "done": sorted(done),
@@ -105,10 +176,16 @@ def save_state(
         try:
             prev = json.loads(path.read_text(encoding="utf-8"))
             blob["retries"] = prev.get("retries", {})
+            blob["fix_applied"] = prev.get("fix_applied", {})
+            blob["force_rerun"] = prev.get("force_rerun", [])
+            if prev.get("note"):
+                blob["note"] = prev["note"]
         except Exception:
             blob["retries"] = {}
     if retries is not None:
         blob["retries"] = retries
+    if force_rerun is not None:
+        blob["force_rerun"] = sorted(force_rerun)
     path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
 
 
@@ -126,14 +203,19 @@ def main() -> None:
 
     done: set[str] = set()
     failed: set[str] = set()
+    force_rerun: set[str] = set()
     if state_path.exists():
         blob = json.loads(state_path.read_text(encoding="utf-8"))
         done = set(blob.get("done", []))
         failed = set(blob.get("failed", []))
+        force_rerun = set(blob.get("force_rerun", []))
+        # Never treat a forced re-run as already finished.
+        done -= force_rerun
 
     # Adopt already-COMPLETE train kernels so we don't waste a multi-hour re-run.
+    # Skip force_rerun: COMPLETE may be a CPU stub / wiped partial, not a real train.
     for folder, slug, is_gate in JOBS:
-        if slug in done or is_gate:
+        if slug in done or is_gate or slug in force_rerun:
             continue
         if status(slug) == "COMPLETE":
             print("adopt existing COMPLETE", slug, flush=True)
@@ -162,6 +244,40 @@ def main() -> None:
     )
 
     while pending or in_flight:
+        # Safety: a DONE train must never burn GPU again.
+        for folder, slug, _is_gate in JOBS:
+            if slug not in done:
+                continue
+            if "train" not in slug:
+                continue
+            st = status(slug)
+            if st in {"RUNNING", "QUEUED", "PENDING"}:
+                print(
+                    "ALERT unexpected re-run of DONE job",
+                    slug,
+                    st,
+                    "— killing with CPU stub",
+                    flush=True,
+                )
+                # Wake the Cursor agent watching this terminal.
+                print(
+                    'AGENT_LOOP_TICK_task1_watch '
+                    + json.dumps(
+                        {
+                            "prompt": (
+                                f"Task1 orch ALERT: done train {slug} is {st} again. "
+                                "CPU-stub kill attempted. Verify no wasted GPU and do not "
+                                "re-push completed trains."
+                            )
+                        }
+                    ),
+                    flush=True,
+                )
+                try:
+                    push_cpu_kill(slug, folder)
+                except Exception as e:
+                    print("kill failed", slug, e, flush=True)
+
         # Harvest finished in-flight jobs.
         for slug in list(in_flight):
             st = status(slug)
@@ -176,10 +292,56 @@ def main() -> None:
                 print("pull failed/timeout", slug, e, flush=True)
 
             if st == "COMPLETE":
-                done.add(slug)
-                failed.discard(slug)
-                print("DONE", slug, flush=True)
-            else:
+                # Kaggle COMPLETE ≠ training success. Require stage_status returncode==0
+                # when that file exists (skip for CPU-stub kills / missing pulls).
+                stage_ok = True
+                stage_path = pull_dir / "results" / "stage_status.json"
+                if "train" in slug or "prep" in slug:
+                    if not stage_path.exists():
+                        stage_ok = False
+                        print(
+                            "COMPLETE but missing stage_status after pull",
+                            slug,
+                            "— not marking done",
+                            flush=True,
+                        )
+                if stage_path.exists():
+                    try:
+                        stage = json.loads(stage_path.read_text(encoding="utf-8"))
+                        if int(stage.get("returncode", 1)) != 0:
+                            stage_ok = False
+                            print(
+                                "COMPLETE but stage_status failed",
+                                slug,
+                                stage,
+                                flush=True,
+                            )
+                    except Exception as e:
+                        stage_ok = False
+                        print("stage_status unreadable", slug, e, flush=True)
+                if stage_ok:
+                    done.add(slug)
+                    failed.discard(slug)
+                    force_rerun.discard(slug)
+                    print("DONE", slug, flush=True)
+                else:
+                    failed.add(slug)
+                    print(
+                        'AGENT_LOOP_TICK_task1_watch '
+                        + json.dumps(
+                            {
+                                "prompt": (
+                                    f"Task1 orch ALERT: {slug} kernel COMPLETE but "
+                                    "stage_status returncode!=0 — not marking done; "
+                                    "weights/results may be missing. Investigate."
+                                )
+                            }
+                        ),
+                        flush=True,
+                    )
+                    st = "ERROR"
+
+            if st != "COMPLETE":
                 failed.add(slug)
                 for name in (
                     "results/failure.txt",
@@ -196,6 +358,7 @@ def main() -> None:
                         done,
                         failed,
                         {k: v[0] for k, v in in_flight.items()},
+                        force_rerun=force_rerun,
                     )
                     raise SystemExit(f"Gate job failed: {slug} status={st}")
                 # At most one requeue per CODE_FIX_ID (deploy a real fix, don't loop OOMs).
@@ -221,6 +384,7 @@ def main() -> None:
                     blob["done"] = sorted(done)
                     blob["failed"] = sorted(failed)
                     blob["in_flight"] = {k: v[0] for k, v in in_flight.items()}
+                    blob["force_rerun"] = sorted(force_rerun)
                     state_path.write_text(json.dumps(blob, indent=2), encoding="utf-8")
                     continue
                 print(
@@ -234,7 +398,13 @@ def main() -> None:
 
             # Drop from pending if still listed
             pending = [(f, s, g) for f, s, g in pending if s != slug]
-            save_state(state_path, done, failed, {k: v[0] for k, v in in_flight.items()})
+            save_state(
+                state_path,
+                done,
+                failed,
+                {k: v[0] for k, v in in_flight.items()},
+                force_rerun=force_rerun,
+            )
 
         # Fill free GPU slots.
         while len(in_flight) < MAX_SLOTS:
@@ -250,6 +420,26 @@ def main() -> None:
             if next_job is None:
                 break
             i, folder, slug, is_gate = next_job
+            if slug in done:
+                print("REFUSE push of DONE job", slug, flush=True)
+                pending = [(f, s, g) for f, s, g in pending if s != slug]
+                continue
+            # Never restart a train that Kaggle already marks COMPLETE,
+            # unless force_rerun says that COMPLETE was a stub/bad run.
+            if "train" in slug and slug not in force_rerun and status(slug) == "COMPLETE":
+                print("adopt COMPLETE before push", slug, flush=True)
+                done.add(slug)
+                pending = [(f, s, g) for f, s, g in pending if s != slug]
+                save_state(
+                    state_path,
+                    done,
+                    failed,
+                    {k: v[0] for k, v in in_flight.items()},
+                    force_rerun=force_rerun,
+                )
+                continue
+            if slug in force_rerun:
+                print("FORCE RERUN", slug, "(ignoring Kaggle COMPLETE)", flush=True)
             print("PUSH", folder, "->", slug, "slots", len(in_flight) + 1, "/", MAX_SLOTS, flush=True)
             try:
                 push_folder(folder)
@@ -265,7 +455,13 @@ def main() -> None:
             pending = [(f, s, g) for j, (f, s, g) in enumerate(pending) if not (s == slug and j == i)]
             # Re-build pending without this slug
             pending = [(f, s, g) for f, s, g in JOBS if s not in done and s not in in_flight]
-            save_state(state_path, done, failed, {k: v[0] for k, v in in_flight.items()})
+            save_state(
+                state_path,
+                done,
+                failed,
+                {k: v[0] for k, v in in_flight.items()},
+                force_rerun=force_rerun,
+            )
 
         if not pending and not in_flight:
             break

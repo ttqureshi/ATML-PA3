@@ -1,44 +1,30 @@
 # ATML PA3 Task 1 — execution status
 
-Canonical code: `C:\Users\PMLS\ATML-PA3\task1`  
-Public GitHub: https://github.com/ttqureshi/ATML-PA3  
-(Google Drive workspace was out of quota; pointer file left in the Drive folder.)
+**Updated:** 2026-11-04  
+**State:** **COMPLETE** (`report_bundle/meta/POST_COMPLETE.json`, host `colab-t4-resume`)
 
-## Implementation
+## Done
 
-Complete local package under `task1/`:
+| Piece | Status |
+|---|---|
+| Prep + baseline eval | DONE (GSM8K flex ≈ 0.431) |
+| LoRA r4 / r16 / OPLoRA train + eval | DONE |
+| Full FT mid / final (healthy retrain) | DONE (GSM8K ≈ 0.560 / 0.643) |
+| Full FT + L2-SP final | DONE (GSM8K ≈ 0.660) |
+| Diagnostics + qualitative + analyze | DONE |
+| Writeup evidence pack | `task1/report_bundle/` committed for report agents |
 
-- Data filter for MetaMathQA 40k
-- Shared SFT trainer
-- Five variants: Full FT, Full FT+L2-SP, LoRA-4, LoRA-16, OPLoRA
-- lm-eval harness evaluation
-- Weight/activation diagnostics
-- Qualitative generations (`first_plot_questions.yaml`)
-- Tables + figures writers under `results/`
+## Authoritative numbers
 
-## Kaggle (kicked off)
+Use `report_bundle/tables/benchmark_table.md` and `report_bundle/metrics/*/summary.json`.  
+Ignore Drive folders named `*__OLD_BAD*` and any Full-FT train summary with `skipped_updates: 1249`.
 
-| Kernel (URL slug) | Role | Notes |
-|---|---|---|
-| [atml-pa3-t1-smoke](https://www.kaggle.com/code/mtayyabtahir/atml-pa3-t1-smoke) | Smoke test | Used to validate the stack |
-| [atml-pa3-t1-prep-baseline](https://www.kaggle.com/code/mtayyabtahir/atml-pa3-t1-prep-baseline) | Data + probe + baseline eval | RUNNING |
-| [atml-pa3-t1-train-fullft](https://www.kaggle.com/code/mtayyabtahir/atml-pa3-t1-train-fullft) | Full FT 1250 updates | ERROR on first try (likely huge theta0 dump); fixed, re-push queued |
-| [atml-pa3-t1-train-full-ft-l2sp](https://www.kaggle.com/code/mtayyabtahir/atml-pa3-t1-train-full-ft-l2sp) | Full FT + L2-SP | RUNNING |
-| atml-pa3-t1-train-full-ft-l2sp | Full FT + L2-SP | Queued when a GPU slot frees (limit 2) |
-| atml-pa3-t1-train-lora-r4 | LoRA r=4 | Queued by `scripts/queue_remaining.py` |
-| atml-pa3-t1-train-lora-r16 | LoRA r=16 | Queued by monitor |
-| atml-pa3-t1-train-oplora | OPLoRA | Queued by monitor |
-| atml-pa3-t1-pipeline-post | Eval + diagnostics + plots | Push after all trains finish |
+## Known gaps for the PDF
 
-Code dataset: https://www.kaggle.com/datasets/mtayyabtahir/atml-pa3-task1-code
+- Combined SFT-loss figure not present in synced artifacts (`sft_loss: null` in analysis index).  
+- Healthy Full-FT wall-time / peak-mem summaries not re-exported (NaN-run summaries must not be cited).  
+- Checkpoint sizes for healthy Full FT: ~1.50GB model-only (see `report_bundle/checkpoint_meta/`).
 
-Kaggle allows **2 concurrent GPU sessions**. A background queue script pushes the remaining train kernels as slots open.
+## Do not redo
 
-## Artifacts
-
-On Kaggle: `/kaggle/working/results/...`  
-Pull later with `kaggle kernels output <slug> -p ...` (avoid pulling HF caches; notebooks keep cache under `/tmp`).
-
-## Next (not in this step)
-
-After all five trainings + prep finish: push `pipeline_post`, pull metrics, then compile the Task 1 report PDF when you ask.
+- Retrain / re-eval any of the seven conditions unless regenerating missing loss curves or resource logs.

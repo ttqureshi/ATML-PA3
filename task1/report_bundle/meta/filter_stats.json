@@ -1,0 +1,10 @@
+{
+  "source_rows_scanned": 40002,
+  "excluded_empty": 0,
+  "excluded_overlength": 2,
+  "excluded_gsm8k_overlap": 0,
+  "kept": 40000,
+  "normalization": "nfkc+lower+strip+collapse_ws+strip_quotes",
+  "max_seq_len": 2048,
+  "num_examples_requested": 40000
+}
