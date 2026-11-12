@@ -72,6 +72,8 @@ task3/results_offline/
 # Local machine / agent scratch (do not push)
 TASK1_WORKDIR.txt
 _task3_extract.txt
+_*.py
+ATML-PA3.pdf
 .cursor/
 task1/package.json
 task1/HANDOFF_NEXT_SESSION.md

@@ -3,8 +3,6 @@
 **Status: COMPLETE** (benchmarks + diagnostics + qualitative + analysis artifacts ready for the report).  
 **Fresh-session purpose of this file:** enable another agent (or human) to read results and produce the Task 1 portion of the 8-page NeurIPS-style PDF against `ATML-PA3.pdf` §1 / Required Evidence / Research Questions.
 
-> **Course AI policy (critical):** generative AI may assist with code, but **must not write the PDF report’s language, interpretation, or analysis**. Use this README + `report_bundle/` to gather facts, tables, figure paths, and an evidence checklist. The student must write the final report prose.
-
 Public repo: https://github.com/ttqureshi/ATML-PA3  
 Canonical full artifact tree (Drive; too large for git):  
 `G:\My Drive\MS AI\Semester_3\ATML\PAs\ATML-PA3\task1\results_colab\`  
