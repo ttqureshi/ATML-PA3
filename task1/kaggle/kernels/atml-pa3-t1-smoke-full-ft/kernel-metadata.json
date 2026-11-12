@@ -1,0 +1,16 @@
+{
+  "id": "ttqureshi/atml-pa3-t1-smoke-full-ft",
+  "title": "atml-pa3-t1-smoke-full-ft",
+  "code_file": "atml-pa3-t1-smoke-full-ft.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}

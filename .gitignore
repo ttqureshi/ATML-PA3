@@ -68,3 +68,21 @@ kaggle.json
 
 task3/results_offline/
 
+
+# Local machine / agent scratch (do not push)
+TASK1_WORKDIR.txt
+_task3_extract.txt
+.cursor/
+task1/package.json
+task1/HANDOFF_NEXT_SESSION.md
+task2/HANDOFF_NEXT_SESSION.md
+task1/scripts/queue_ttq_leftovers.py
+task1/scripts/monitor_prep_ttq.py
+task1/scripts/watchdog_task1.py
+task1/scripts/_fetch_fullft_meta.py
+task1/scripts/_fetch_l2sp_meta.py
+task1/scripts/_kaggle_browser_peek.py
+
+# Bloated Kaggle kernel dumps with embedded outputs/weights (~GB)
+task1/kaggle/kernels/atml-pa3-t1-eval-*/
+task1/kaggle/kernels/atml-pa3-t1-post-analyze/
