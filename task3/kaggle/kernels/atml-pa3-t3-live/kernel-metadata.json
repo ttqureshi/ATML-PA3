@@ -1,0 +1,17 @@
+{
+  "id": "mtayyabtahir/atml-pa3-t3-live",
+  "title": "atml-pa3-t3-live",
+  "code_file": "atml-pa3-t3-live.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": [],
+  "machine_shape": "NvidiaTeslaT4"
+}

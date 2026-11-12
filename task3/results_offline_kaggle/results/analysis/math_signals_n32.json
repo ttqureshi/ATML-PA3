@@ -1,0 +1,7 @@
+{
+  "dataset": "math",
+  "mean_length_correctness_corr": -0.09313277738951026,
+  "mean_logp_top_bottom_correctness_diff": 0.07046875,
+  "self_certainty_top_bottom_correctness_diff": 0.1103125,
+  "shortest_rollout_accuracy": 0.56
+}

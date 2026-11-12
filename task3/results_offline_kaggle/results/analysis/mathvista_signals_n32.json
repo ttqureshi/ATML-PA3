@@ -1,0 +1,12 @@
+{
+  "dataset": "mathvista",
+  "mean_length_correctness_corr": -0.08331738627535477,
+  "mean_logp_top_bottom_correctness_diff": 0.01703125,
+  "self_certainty_top_bottom_correctness_diff": 0.035625,
+  "shortest_rollout_accuracy": 0.52875,
+  "vision_top_bottom_correctness_diff": 0.0384375,
+  "visconf_top_bottom_correctness_diff": 0.07484375,
+  "mean_conf_vision_corr": -0.20875998072513294,
+  "mean_Ztoken_minus_Z": -0.0022433811420689005,
+  "note_Ztoken": "Ztoken_i - Z_i = Cov_t(c_i,t, v_i,t)"
+}

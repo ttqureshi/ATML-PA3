@@ -1,0 +1,9 @@
+{
+  "enable_thinking_false": true,
+  "run_lm_forward": true,
+  "no_grad_not_wrapping_lm": true,
+  "output_scale": true,
+  "layernorm_once": true,
+  "example_weighted_loss": true,
+  "unscale_before_clip": true
+}

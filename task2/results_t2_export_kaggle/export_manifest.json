@@ -1,0 +1,125 @@
+{
+  "n": 30,
+  "files": [
+    {
+      "rel": "results/STATUS.md",
+      "size": 652
+    },
+    {
+      "rel": "results/code_fingerprint.json",
+      "size": 210
+    },
+    {
+      "rel": "results/configs_used/connector_calibration.json",
+      "size": 427
+    },
+    {
+      "rel": "results/configs_used/resolved.yaml",
+      "size": 2587
+    },
+    {
+      "rel": "results/configs_used/runtime.json",
+      "size": 118
+    },
+    {
+      "rel": "results/figures/final_scores.png",
+      "size": 48152
+    },
+    {
+      "rel": "results/figures/learning_curves.png",
+      "size": 188773
+    },
+    {
+      "rel": "results/figures/qualitative_pairs.png",
+      "size": 4087059
+    },
+    {
+      "rel": "results/logs/dev_metrics.jsonl",
+      "size": 16695
+    },
+    {
+      "rel": "results/logs/train_metrics.jsonl",
+      "size": 1864016
+    },
+    {
+      "rel": "results/qualitative/complementary_examples.json",
+      "size": 31501
+    },
+    {
+      "rel": "results/resources/feature_cache.json",
+      "size": 133
+    },
+    {
+      "rel": "results/resources/generation.json",
+      "size": 129
+    },
+    {
+      "rel": "results/resources/mixture_counts.json",
+      "size": 258
+    },
+    {
+      "rel": "results/resources/train_resources.json",
+      "size": 1119
+    },
+    {
+      "rel": "results/resources/trainable_params_stage1.json",
+      "size": 192
+    },
+    {
+      "rel": "results/resources/trainable_params_stage2.json",
+      "size": 199
+    },
+    {
+      "rel": "results/resources/trainable_params_stage3.json",
+      "size": 192
+    },
+    {
+      "rel": "results/tables/dev_metrics.csv",
+      "size": 1423
+    },
+    {
+      "rel": "results/tables/dev_metrics.md",
+      "size": 1790
+    },
+    {
+      "rel": "results/tables/final_advantages.csv",
+      "size": 735
+    },
+    {
+      "rel": "results/tables/final_results.csv",
+      "size": 5265
+    },
+    {
+      "rel": "results/tables/final_results.md",
+      "size": 6795
+    },
+    {
+      "rel": "results/tables/resources.csv",
+      "size": 482
+    },
+    {
+      "rel": "results/tables/resources.md",
+      "size": 586
+    },
+    {
+      "rel": "results/raw/eval/final/generations.jsonl",
+      "size": 277806
+    },
+    {
+      "rel": "results/raw/eval/final/mismatched_map.json",
+      "size": 13520
+    },
+    {
+      "rel": "results/raw/eval/final/per_example.jsonl",
+      "size": 870054
+    },
+    {
+      "rel": "results/raw/eval/final/summary.json",
+      "size": 38791
+    },
+    {
+      "rel": "results/raw/eval/final/summary_recomputed.json",
+      "size": 38625
+    }
+  ]
+}

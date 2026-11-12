@@ -1,0 +1,168 @@
+{
+  "dataset": "math",
+  "split": "eval",
+  "n_questions": 800,
+  "budgets": {
+    "1": {
+      "oracle_coverage": 0.5814999999999999,
+      "mean_distinct_groups": 1.0,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        }
+      }
+    },
+    "2": {
+      "oracle_coverage": 0.658375,
+      "mean_distinct_groups": 1.391625,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 1332.187375
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.59575,
+          "mean_token_cost": 1332.187375
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.6052500000000001,
+          "mean_token_cost": 1332.187375
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.6052500000000001,
+          "mean_token_cost": 1332.187375
+        }
+      }
+    },
+    "4": {
+      "oracle_coverage": 0.7197499999999999,
+      "mean_distinct_groups": 1.988625,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.629125,
+          "mean_token_cost": 2667.187
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.605625,
+          "mean_token_cost": 2667.187
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.6253749999999999,
+          "mean_token_cost": 2667.187
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.632375,
+          "mean_token_cost": 2667.187
+        }
+      }
+    },
+    "8": {
+      "oracle_coverage": 0.7655000000000001,
+      "mean_distinct_groups": 2.9097500000000003,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.653875,
+          "mean_token_cost": 5335.11875
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.6083750000000001,
+          "mean_token_cost": 5335.11875
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.6338750000000001,
+          "mean_token_cost": 5335.11875
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.6619999999999999,
+          "mean_token_cost": 5335.11875
+        }
+      }
+    },
+    "16": {
+      "oracle_coverage": 0.80275,
+      "mean_distinct_groups": 4.3755,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.6605,
+          "mean_token_cost": 10666.518375
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.59325,
+          "mean_token_cost": 10666.518375
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.63875,
+          "mean_token_cost": 10666.518375
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.672,
+          "mean_token_cost": 10666.518375
+        }
+      }
+    },
+    "32": {
+      "oracle_coverage": 0.83375,
+      "mean_distinct_groups": 6.72,
+      "methods": {
+        "FirstAns": {
+          "accuracy": 0.5814999999999999,
+          "mean_token_cost": 664.957625
+        },
+        "SelfConsistency": {
+          "accuracy": 0.6655,
+          "mean_token_cost": 21347.0175
+        },
+        "HighestMeanLogp": {
+          "accuracy": 0.57875,
+          "mean_token_cost": 21347.0175
+        },
+        "HighestSelfCertainty": {
+          "accuracy": 0.63875,
+          "mean_token_cost": 21347.0175
+        },
+        "SelfCertaintyRWC": {
+          "accuracy": 0.679125,
+          "mean_token_cost": 21347.0175
+        }
+      }
+    }
+  },
+  "failure_decomposition_n32": {
+    "sampling_failures": 133,
+    "selection_failures": 139,
+    "note": "sampling=no correct candidate in prefixes; selection=correct available but SC missed (avg over orders)"
+  }
+}

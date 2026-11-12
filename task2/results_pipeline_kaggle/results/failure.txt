@@ -1,0 +1,38 @@
+CMD: /usr/bin/python3 -m src.train.run_train --artifacts-root /kaggle/working/results
+
+Traceback (most recent call last):
+  File "/kaggle/working/task2/src/run_stage.py", line 54, in _run
+    raise subprocess.CalledProcessError(code, cmd)
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-m', 'src.train.run_train', '--artifacts-root', '/kaggle/working/results']' returned non-zero exit status 1.
+
+
+--- subprocess log ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+PROMPT_PREFIX '<|im_start|>user\n'
+PROMPT_SUFFIX '<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n'
+THINKING_DISABLED True
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/311 [00:00<02:39,  1.94it/s]
+Loading weights:  69%|██████▉   | 214/311 [00:00<00:00, 454.37it/s]
+Loading weights: 100%|██████████| 311/311 [00:00<00:00, 411.83it/s]
+CALIBRATION 0.05523372356981264
+DEV_EVAL update=0
+DEV update=0 caption_loss=5.5234 ground_dNLL=0.0507 natural_dNLL=-0.1456
+STAGE caption_alignment trainable 1837056 resume_at 0
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/task2/src/train/run_train.py", line 15, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/working/task2/src/train/run_train.py", line 11, in main
+    train(cfg, dirs, fresh=bool(args.fresh))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/task2/src/train/trainer.py", line 511, in train
+    runner.run_update(completed)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/kaggle/working/task2/src/train/trainer.py", line 313, in run_update
+    raise RuntimeError(f"GradScaler skipped {attempts} attempts at update {global_update}")
+RuntimeError: GradScaler skipped 5 attempts at update 1

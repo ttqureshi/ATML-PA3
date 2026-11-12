@@ -1,0 +1,12 @@
+{
+  "rule": "output_scale = mean_L2(text_token_embeddings) / mean_L2(connector_outputs_before_scale)",
+  "mean_text_l2": 0.871373176574707,
+  "mean_connector_l2_before_scale": 15.776107788085938,
+  "output_scale": 0.05523372356981264,
+  "num_text_tokens": 2048,
+  "num_images": 32,
+  "num_visual_tokens_per_image": 196,
+  "source": "training captions and training-image features only",
+  "seed": 6304,
+  "previous_scale": 1.0
+}

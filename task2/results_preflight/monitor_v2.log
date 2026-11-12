@@ -1,0 +1,5 @@
+14:14:10 KernelWorkerStatus.QUEUED
+14:19:03 status_error 1 HTTPSConnectionPool(host='api.kaggle.com', port=443): Max retries exceeded with url: /v1/kernels.KernelsApiService/GetKernelSessionStatus (Caused by ConnectTimeoutError(<HTTPSConnection(host='api.kagg
+14:40:10 KernelWorkerStatus.RUNNING
+14:44:24 KernelWorkerStatus.ERROR
+DONE KernelWorkerStatus.ERROR

@@ -1,0 +1,1360 @@
+{
+  "bootstrap_resamples": 4000,
+  "bootstrap_seed": 6304,
+  "suites": {
+    "grounding": {
+      "n_pairs": 64,
+      "n_examples": 128,
+      "overall": {
+        "accuracy/correct": {
+          "point": 0.6875,
+          "lo": 0.59375,
+          "hi": 0.7734375,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "nll/correct": {
+          "point": 0.796599782271187,
+          "lo": 0.6119751640380343,
+          "hi": 0.9890183613366248,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "pair_accuracy/correct": {
+          "point": 0.515625,
+          "lo": 0.390625,
+          "hi": 0.640625,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "identical_answer_rate/correct": {
+          "point": 0.265625,
+          "lo": 0.15625,
+          "hi": 0.375,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "empty_answer_rate/correct": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "gen_time_sec/correct": {
+          "point": 0.06494376459380646,
+          "lo": 0.06375856121314101,
+          "hi": 0.0663291301215371,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "accuracy/complementary": {
+          "point": 0.15625,
+          "lo": 0.1015625,
+          "hi": 0.21875,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "nll/complementary": {
+          "point": 3.235320499738009,
+          "lo": 2.798816917865042,
+          "hi": 3.691907914710737,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "pair_accuracy/complementary": {
+          "point": 0.015625,
+          "lo": 0.0,
+          "hi": 0.046875,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "identical_answer_rate/complementary": {
+          "point": 0.265625,
+          "lo": 0.15625,
+          "hi": 0.375,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "empty_answer_rate/complementary": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "gen_time_sec/complementary": {
+          "point": 0.07081272446092157,
+          "lo": 0.0694589424757539,
+          "hi": 0.0723895849236249,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "accuracy/mismatched": {
+          "point": 0.359375,
+          "lo": 0.3046875,
+          "hi": 0.4140625,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "nll/mismatched": {
+          "point": 1.9901136837313516,
+          "lo": 1.7579132642293076,
+          "hi": 2.2263604869735163,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "pair_accuracy/mismatched": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "identical_answer_rate/mismatched": {
+          "point": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "empty_answer_rate/mismatched": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "gen_time_sec/mismatched": {
+          "point": 0.07445848834380797,
+          "lo": 0.07290873226773016,
+          "hi": 0.07627535687913216,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "accuracy/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "nll/no_image": {
+          "point": 5.847540777176619,
+          "lo": 5.444397826073692,
+          "hi": 6.2596454376354815,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "pair_accuracy/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "identical_answer_rate/no_image": {
+          "point": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "empty_answer_rate/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "gen_time_sec/no_image": {
+          "point": 0.10712481385152728,
+          "lo": 0.10287590006081704,
+          "hi": 0.11134127898741522,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "advantage/accuracy": {
+          "point": 0.53125,
+          "lo": 0.390625,
+          "hi": 0.6640625,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "advantage/nll": {
+          "point": 2.438720717466822,
+          "lo": 1.8617797944544265,
+          "hi": 3.0390991327221744,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        },
+        "follow_partner_rate": {
+          "point": 0.6875,
+          "lo": 0.59375,
+          "hi": 0.7734375,
+          "n_resamples": 4000,
+          "n_pairs": 64
+        }
+      },
+      "by_subtype": {
+        "counting": {
+          "accuracy/correct": {
+            "point": 0.46875,
+            "lo": 0.34375,
+            "hi": 0.59375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/correct": {
+            "point": 1.2719916444038972,
+            "lo": 1.0723115974862594,
+            "hi": 1.4872543361299904,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/correct": {
+            "point": 0.21875,
+            "lo": 0.09375,
+            "hi": 0.375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/correct": {
+            "point": 0.34375,
+            "lo": 0.1875,
+            "hi": 0.5,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/correct": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/correct": {
+            "point": 0.0639269481094118,
+            "lo": 0.06359334810532466,
+            "hi": 0.06427089708380188,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/complementary": {
+            "point": 0.21875,
+            "lo": 0.125,
+            "hi": 0.3125,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/complementary": {
+            "point": 2.1211127382703125,
+            "lo": 1.7668296874151566,
+            "hi": 2.5158518170472233,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/complementary": {
+            "point": 0.03125,
+            "lo": 0.0,
+            "hi": 0.09375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/complementary": {
+            "point": 0.34375,
+            "lo": 0.1875,
+            "hi": 0.5,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/complementary": {
+            "point": 0.06987705485937568,
+            "lo": 0.0696854738183573,
+            "hi": 0.07007809283329554,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/mismatched": {
+            "point": 0.21875,
+            "lo": 0.140625,
+            "hi": 0.3125,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/mismatched": {
+            "point": 1.71503986697644,
+            "lo": 1.5210493963677436,
+            "hi": 1.9160580279305577,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/mismatched": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/mismatched": {
+            "point": 0.07142954400001145,
+            "lo": 0.07110814282169216,
+            "hi": 0.0717701882733179,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/no_image": {
+            "point": 4.560221895575523,
+            "lo": 4.120629427395761,
+            "hi": 5.032746487017721,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/no_image": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/no_image": {
+            "point": 0.12420467499998722,
+            "lo": 0.1238305581434302,
+            "hi": 0.12462930104626331,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "advantage/accuracy": {
+            "point": 0.25,
+            "lo": 0.0625,
+            "hi": 0.4375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "advantage/nll": {
+            "point": 0.8491210938664153,
+            "lo": 0.37152710325608496,
+            "hi": 1.387469491569209,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "follow_partner_rate": {
+            "point": 0.46875,
+            "lo": 0.34375,
+            "hi": 0.59375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          }
+        },
+        "presence": {
+          "accuracy/correct": {
+            "point": 0.90625,
+            "lo": 0.828125,
+            "hi": 0.96875,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/correct": {
+            "point": 0.32120792013847677,
+            "lo": 0.12875029345480016,
+            "hi": 0.5599094939841109,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/correct": {
+            "point": 0.8125,
+            "lo": 0.65625,
+            "hi": 0.9375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/correct": {
+            "point": 0.1875,
+            "lo": 0.0625,
+            "hi": 0.34375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/correct": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/correct": {
+            "point": 0.06596058107820113,
+            "lo": 0.0636045624025348,
+            "hi": 0.06864040315713353,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/complementary": {
+            "point": 0.09375,
+            "lo": 0.03125,
+            "hi": 0.171875,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/complementary": {
+            "point": 4.349528261205705,
+            "lo": 3.757753786930698,
+            "hi": 4.951790448524116,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/complementary": {
+            "point": 0.1875,
+            "lo": 0.0625,
+            "hi": 0.34375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/complementary": {
+            "point": 0.07174839406246747,
+            "lo": 0.06907036205198995,
+            "hi": 0.07483390944734847,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/mismatched": {
+            "point": 0.5,
+            "lo": 0.5,
+            "hi": 0.5,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/mismatched": {
+            "point": 2.265187500486263,
+            "lo": 1.8683999538690501,
+            "hi": 2.6692093922898383,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/mismatched": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/mismatched": {
+            "point": 0.0774874326876045,
+            "lo": 0.07480206835226397,
+            "hi": 0.08069607442704604,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "nll/no_image": {
+            "point": 7.134859658777714,
+            "lo": 6.885312058776617,
+            "hi": 7.411401628144086,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "pair_accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "identical_answer_rate/no_image": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "empty_answer_rate/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "gen_time_sec/no_image": {
+            "point": 0.09004495270306734,
+            "lo": 0.08878089535315663,
+            "hi": 0.09140175329719699,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "advantage/accuracy": {
+            "point": 0.8125,
+            "lo": 0.65625,
+            "hi": 0.9375,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "advantage/nll": {
+            "point": 4.028320341067229,
+            "lo": 3.2932068299581716,
+            "hi": 4.771246363154802,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          },
+          "follow_partner_rate": {
+            "point": 0.90625,
+            "lo": 0.828125,
+            "hi": 0.96875,
+            "n_resamples": 4000,
+            "n_pairs": 32
+          }
+        }
+      }
+    },
+    "natural": {
+      "n_pairs": 96,
+      "n_examples": 192,
+      "overall": {
+        "accuracy/correct": {
+          "point": 0.5916666666666667,
+          "lo": 0.5296875,
+          "hi": 0.6526041666666667,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "nll/correct": {
+          "point": 1.2143321142042016,
+          "lo": 0.984598078810086,
+          "hi": 1.4627182018955258,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "pair_accuracy/correct": {
+          "point": 0.28125,
+          "lo": 0.1875,
+          "hi": 0.375,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "identical_answer_rate/correct": {
+          "point": 0.40625,
+          "lo": 0.3122395833333334,
+          "hi": 0.5,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "empty_answer_rate/correct": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "gen_time_sec/correct": {
+          "point": 0.08549872952603248,
+          "lo": 0.07993318476112227,
+          "hi": 0.09110187423627843,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "accuracy/complementary": {
+          "point": 0.2552083333333333,
+          "lo": 0.1963541666666667,
+          "hi": 0.31666666666666665,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "nll/complementary": {
+          "point": 2.5574872040500245,
+          "lo": 2.2172421153246735,
+          "hi": 2.9291020770314695,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "pair_accuracy/complementary": {
+          "point": 0.03125,
+          "lo": 0.0,
+          "hi": 0.07291666666666667,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "identical_answer_rate/complementary": {
+          "point": 0.40625,
+          "lo": 0.3122395833333334,
+          "hi": 0.5,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "empty_answer_rate/complementary": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "gen_time_sec/complementary": {
+          "point": 0.08732850326044665,
+          "lo": 0.08152404374419361,
+          "hi": 0.09317779908046979,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "accuracy/mismatched": {
+          "point": 0.3177083333333333,
+          "lo": 0.26092447916666667,
+          "hi": 0.375,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "nll/mismatched": {
+          "point": 2.22663140148749,
+          "lo": 1.9396136768145273,
+          "hi": 2.532964178439215,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "pair_accuracy/mismatched": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "identical_answer_rate/mismatched": {
+          "point": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "empty_answer_rate/mismatched": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "gen_time_sec/mismatched": {
+          "point": 0.08925797569788567,
+          "lo": 0.08315673709110119,
+          "hi": 0.09539285719318466,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "accuracy/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "nll/no_image": {
+          "point": 8.90216225758195,
+          "lo": 8.192699780097852,
+          "hi": 9.644455206518373,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "pair_accuracy/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "identical_answer_rate/no_image": {
+          "point": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "empty_answer_rate/no_image": {
+          "point": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "gen_time_sec/no_image": {
+          "point": 0.11906229649478443,
+          "lo": 0.1167744942200412,
+          "hi": 0.12107563060129435,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "advantage/accuracy": {
+          "point": 0.33645833333333336,
+          "lo": 0.23958333333333337,
+          "hi": 0.43437499999999996,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "advantage/nll": {
+          "point": 1.3431550898458229,
+          "lo": 0.9998735053372607,
+          "hi": 1.705739190369968,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        },
+        "follow_partner_rate": {
+          "point": 0.5572916666666666,
+          "lo": 0.4947916666666667,
+          "hi": 0.6197916666666666,
+          "n_resamples": 4000,
+          "n_pairs": 96
+        }
+      },
+      "by_subtype": {
+        "number": {
+          "accuracy/correct": {
+            "point": 0.4270833333333333,
+            "lo": 0.3145833333333333,
+            "hi": 0.5395833333333333,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "nll/correct": {
+            "point": 1.700776677239143,
+            "lo": 1.304996551177707,
+            "hi": 2.0860134430256343,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "pair_accuracy/correct": {
+            "point": 0.08333333333333333,
+            "lo": 0.0,
+            "hi": 0.20833333333333334,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "identical_answer_rate/correct": {
+            "point": 0.4166666666666667,
+            "lo": 0.20833333333333334,
+            "hi": 0.625,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "empty_answer_rate/correct": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "gen_time_sec/correct": {
+            "point": 0.09329446827075571,
+            "lo": 0.0786715793885764,
+            "hi": 0.10918634774381412,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "accuracy/complementary": {
+            "point": 0.20625000000000002,
+            "lo": 0.11041666666666666,
+            "hi": 0.3104166666666667,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "nll/complementary": {
+            "point": 2.8796435251521566,
+            "lo": 2.2437450809869914,
+            "hi": 3.620430413618063,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "pair_accuracy/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "identical_answer_rate/complementary": {
+            "point": 0.4166666666666667,
+            "lo": 0.20833333333333334,
+            "hi": 0.625,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "empty_answer_rate/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "gen_time_sec/complementary": {
+            "point": 0.09495132972915599,
+            "lo": 0.08030264506002259,
+            "hi": 0.11084946187787068,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "accuracy/mismatched": {
+            "point": 0.17916666666666667,
+            "lo": 0.08333333333333333,
+            "hi": 0.28750000000000003,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "nll/mismatched": {
+            "point": 2.33735455169032,
+            "lo": 1.925357884944727,
+            "hi": 2.796776086060951,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "pair_accuracy/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "identical_answer_rate/mismatched": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "empty_answer_rate/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "gen_time_sec/mismatched": {
+            "point": 0.08365069477084337,
+            "lo": 0.07081603623547418,
+            "hi": 0.10071288907970152,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "nll/no_image": {
+            "point": 5.063120290637016,
+            "lo": 4.324609853078921,
+            "hi": 5.81170322385927,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "pair_accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "identical_answer_rate/no_image": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "empty_answer_rate/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "gen_time_sec/no_image": {
+            "point": 0.12397148922915828,
+            "lo": 0.12295723927826263,
+            "hi": 0.12508765027225313,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "advantage/accuracy": {
+            "point": 0.2208333333333333,
+            "lo": 0.09583333333333333,
+            "hi": 0.35416666666666674,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "advantage/nll": {
+            "point": 1.1788668479130135,
+            "lo": 0.5481612506904638,
+            "hi": 1.9012688729174747,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          },
+          "follow_partner_rate": {
+            "point": 0.3958333333333333,
+            "lo": 0.2708333333333333,
+            "hi": 0.5208333333333334,
+            "n_resamples": 4000,
+            "n_pairs": 24
+          }
+        },
+        "other": {
+          "accuracy/correct": {
+            "point": 0.5819444444444444,
+            "lo": 0.4722222222222222,
+            "hi": 0.6930902777777779,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/correct": {
+            "point": 1.4769188760546967,
+            "lo": 0.9952272069355887,
+            "hi": 2.0272803732303957,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/correct": {
+            "point": 0.3055555555555556,
+            "lo": 0.16666666666666666,
+            "hi": 0.4444444444444444,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/correct": {
+            "point": 0.2777777777777778,
+            "lo": 0.1388888888888889,
+            "hi": 0.4166666666666667,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/correct": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/correct": {
+            "point": 0.10362944169441511,
+            "lo": 0.09913295311174973,
+            "hi": 0.1087525114799438,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/complementary": {
+            "point": 0.12916666666666668,
+            "lo": 0.05555555555555555,
+            "hi": 0.20694444444444446,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/complementary": {
+            "point": 3.5987094092286296,
+            "lo": 3.013722214149311,
+            "hi": 4.200201405579638,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/complementary": {
+            "point": 0.2777777777777778,
+            "lo": 0.1388888888888889,
+            "hi": 0.4166666666666667,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/complementary": {
+            "point": 0.1075323546389326,
+            "lo": 0.1029855887886776,
+            "hi": 0.11280283108526924,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/mismatched": {
+            "point": 0.1611111111111111,
+            "lo": 0.0875,
+            "hi": 0.24027777777777778,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/mismatched": {
+            "point": 3.211311530257161,
+            "lo": 2.6382989808098904,
+            "hi": 3.822967229104122,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/mismatched": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/mismatched": {
+            "point": 0.11614606309717601,
+            "lo": 0.11051122905499666,
+            "hi": 0.12178464354873929,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/no_image": {
+            "point": 11.824499289194742,
+            "lo": 10.745292682945728,
+            "hi": 12.991344515482584,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/no_image": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/no_image": {
+            "point": 0.12250833425001575,
+            "lo": 0.1222415151821377,
+            "hi": 0.12276892742040625,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "advantage/accuracy": {
+            "point": 0.4527777777777777,
+            "lo": 0.3055555555555556,
+            "hi": 0.5999999999999999,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "advantage/nll": {
+            "point": 2.121790533173933,
+            "lo": 1.464174098857782,
+            "hi": 2.7940866667360145,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "follow_partner_rate": {
+            "point": 0.5694444444444444,
+            "lo": 0.4583333333333333,
+            "hi": 0.6805555555555556,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          }
+        },
+        "yes/no": {
+          "accuracy/correct": {
+            "point": 0.7111111111111111,
+            "lo": 0.6263888888888889,
+            "hi": 0.7972222222222222,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/correct": {
+            "point": 0.6274489769970791,
+            "lo": 0.5178575833030562,
+            "hi": 0.7402416673042657,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/correct": {
+            "point": 0.3888888888888889,
+            "lo": 0.2222222222222222,
+            "hi": 0.5555555555555556,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/correct": {
+            "point": 0.5277777777777778,
+            "lo": 0.3611111111111111,
+            "hi": 0.6944444444444444,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/correct": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/correct": {
+            "point": 0.062170858194501,
+            "lo": 0.062039939114203295,
+            "hi": 0.062317656238156376,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/complementary": {
+            "point": 0.4138888888888889,
+            "lo": 0.31666666666666665,
+            "hi": 0.5166666666666667,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/complementary": {
+            "point": 1.3014941181366642,
+            "lo": 1.0737923349771237,
+            "hi": 1.56881225597786,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/complementary": {
+            "point": 0.08333333333333333,
+            "lo": 0.0,
+            "hi": 0.19444444444444445,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/complementary": {
+            "point": 0.5277777777777778,
+            "lo": 0.3611111111111111,
+            "hi": 0.6944444444444444,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/complementary": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/complementary": {
+            "point": 0.0620427675694878,
+            "lo": 0.061961281108115746,
+            "hi": 0.062131982260741674,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/mismatched": {
+            "point": 0.5666666666666667,
+            "lo": 0.5333333333333333,
+            "hi": 0.6041666666666666,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/mismatched": {
+            "point": 1.168135839249266,
+            "lo": 1.0170621281264984,
+            "hi": 1.337276620150725,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/mismatched": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/mismatched": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/mismatched": {
+            "point": 0.06610807558329018,
+            "lo": 0.06595587028243556,
+            "hi": 0.0662633219602038,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "nll/no_image": {
+            "point": 8.539186537265778,
+            "lo": 8.293702592452366,
+            "hi": 8.797627151674694,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "pair_accuracy/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "identical_answer_rate/no_image": {
+            "point": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "empty_answer_rate/no_image": {
+            "point": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "gen_time_sec/no_image": {
+            "point": 0.11234346358330388,
+            "lo": 0.10709457148936284,
+            "hi": 0.11707726796744757,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "advantage/accuracy": {
+            "point": 0.2972222222222222,
+            "lo": 0.11944444444444452,
+            "hi": 0.4708333333333334,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "advantage/nll": {
+            "point": 0.674045141139585,
+            "lo": 0.3513346347944914,
+            "hi": 1.0292968713555537,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          },
+          "follow_partner_rate": {
+            "point": 0.6527777777777778,
+            "lo": 0.5555555555555556,
+            "hi": 0.75,
+            "n_resamples": 4000,
+            "n_pairs": 36
+          }
+        }
+      }
+    }
+  },
+  "weights": "/kaggle/working/results/checkpoints/vlm/stage3_end",
+  "max_new_tokens": 16,
+  "gen_batch_size": 8,
+  "decoding": "greedy",
+  "enable_thinking": false
+}

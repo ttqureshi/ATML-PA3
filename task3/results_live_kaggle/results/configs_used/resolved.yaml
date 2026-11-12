@@ -1,0 +1,71 @@
+seed: 6304
+scorer:
+  math: math-verify
+  mathvista: mathvista-local
+paths:
+  artifacts_root: results
+  data_root: data/ATML-PA3-Data
+  math_model_folder: Qwen2.5-3B-Instruct
+  mathvista_model_folder: Qwen2.5-VL-3B-Instruct
+splits:
+  n_questions: 1000
+  n_dev: 200
+  n_eval: 800
+  n_live: 50
+  n_rollouts: 32
+  n_orders: 10
+budgets:
+- 1
+- 2
+- 4
+- 8
+- 16
+- 32
+bootstrap:
+  n_resamples: 1000
+adaptive:
+  check_ns:
+  - 4
+  - 8
+  - 16
+  max_n: 32
+  tau_grid:
+  - 0.5
+  - 0.625
+  - 0.75
+  - 0.875
+  - 1.0
+  gamma_grid:
+  - 0.0
+  - 0.1
+  - 0.25
+  - 0.5
+  accuracy_tolerance_pp: 1.0
+live:
+  model_id: Qwen/Qwen2.5-3B-Instruct
+  model_revision: null
+  dtype: float16
+  batch_size: 1
+  temperature: 0.7
+  top_p: 0.8
+  top_k: 20
+  repetition_penalty: 1.0
+  system_message: You are a helpful assistant.
+  user_suffix: Think step by step inside <think> </think> tags, then give your final
+    answer inside \boxed{}.
+  review_prompt: Review the solution above. Identify and correct any errors; if it
+    is correct, retain its answer. Give your final answer inside \boxed{}.
+  single_max_new_tokens: 3072
+  parallel_max_new_tokens: 1024
+  refine_initial_max_new_tokens: 1024
+  refine_revision_max_new_tokens: 2048
+  n_parallel: 3
+  math_hf_dataset: DigitalLearningGmbH/MATH-lighteval
+  math_hf_split: test
+smoke:
+  n_live_questions: 2
+  single_max_new_tokens: 64
+  parallel_max_new_tokens: 32
+  refine_initial_max_new_tokens: 32
+  refine_revision_max_new_tokens: 48
+smoke_active: false

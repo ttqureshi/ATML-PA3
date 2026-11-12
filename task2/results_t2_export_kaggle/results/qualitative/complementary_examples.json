@@ -1,0 +1,1545 @@
+{
+  "selection_rule": "Within each final-test suite, pairs are ranked by (1) both correct-image predictions exactly matching their canonical answers, (2) how many complementary predictions match the partner image's canonical answer, (3) whether the two complementary predictions differ, and (4) mean reference ΔNLL. The best pair of each subtype is kept first, then the list is filled to four pairs per suite. Ties keep the sorted pair id. This favors examples that are right on the original image and visibly sensitive to the partner image.",
+  "examples": [
+    {
+      "suite": "grounding",
+      "pair_id": "ground_test_000005",
+      "subtype": "presence",
+      "question": "Does this image contain pizza?",
+      "answers": null,
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "no",
+            "yes"
+          ],
+          "prediction_norm": [
+            "no",
+            "yes"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            8.937666893005371,
+            5.9716057777404785
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            389957,
+            137938
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "yes",
+            "no"
+          ],
+          "prediction_norm": [
+            "yes",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.0028559870552271605,
+            0.00016723664884921163
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            137938,
+            389957
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "no",
+            "no"
+          ],
+          "prediction_norm": [
+            "no",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            1
+          ],
+          "primary": [
+            0.0,
+            1.0
+          ],
+          "nll": [
+            5.1931939125061035,
+            0.005693765357136726
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            153697,
+            153697
+          ],
+          "follow_partner": [
+            1,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "Yes, the image contains pizza.",
+            "Yes, the image contains pizza."
+          ],
+          "prediction_norm": [
+            "yes image contains pizza",
+            "yes image contains pizza"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            6.1646928787231445,
+            7.3521928787231445
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        7.453124723520887
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000137938.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000389957.jpg"
+      ]
+    },
+    {
+      "suite": "grounding",
+      "pair_id": "ground_test_000053",
+      "subtype": "counting",
+      "question": "How many laptops can you see?",
+      "answers": null,
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "3",
+            "1"
+          ],
+          "prediction_norm": [
+            "3",
+            "1"
+          ],
+          "canonical": [
+            "1",
+            "3"
+          ],
+          "partner_canonical": [
+            "3",
+            "1"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            4.42347526550293,
+            5.035959720611572
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            97994,
+            134112
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "1",
+            "3"
+          ],
+          "prediction_norm": [
+            "1",
+            "3"
+          ],
+          "canonical": [
+            "1",
+            "3"
+          ],
+          "partner_canonical": [
+            "3",
+            "1"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.051584675908088684,
+            0.31410035490989685
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            134112,
+            97994
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "1",
+            "1"
+          ],
+          "prediction_norm": [
+            "1",
+            "1"
+          ],
+          "canonical": [
+            "1",
+            "3"
+          ],
+          "partner_canonical": [
+            "3",
+            "1"
+          ],
+          "exact": [
+            1,
+            0
+          ],
+          "primary": [
+            1.0,
+            0.0
+          ],
+          "nll": [
+            0.9046869874000549,
+            1.8578119277954102
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            116439,
+            116439
+          ],
+          "follow_partner": [
+            0,
+            1
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "I cannot see any laptops.",
+            "I cannot see any laptops."
+          ],
+          "prediction_norm": [
+            "i cannot see any laptops",
+            "i cannot see any laptops"
+          ],
+          "canonical": [
+            "1",
+            "3"
+          ],
+          "partner_canonical": [
+            "3",
+            "1"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            3.4077093601226807,
+            4.157709121704102
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        4.546874977648258
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000134112.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000097994.jpg"
+      ]
+    },
+    {
+      "suite": "grounding",
+      "pair_id": "ground_test_000019",
+      "subtype": "presence",
+      "question": "Does this image contain giraffe?",
+      "answers": null,
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "no",
+            "yes"
+          ],
+          "prediction_norm": [
+            "no",
+            "yes"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            7.172772407531738,
+            7.360343933105469
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            120420,
+            559051
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "yes",
+            "no"
+          ],
+          "prediction_norm": [
+            "yes",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.0009689403814263642,
+            0.0008972433279268444
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            559051,
+            120420
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "no",
+            "no"
+          ],
+          "prediction_norm": [
+            "no",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            1
+          ],
+          "primary": [
+            0.0,
+            1.0
+          ],
+          "nll": [
+            5.193262577056885,
+            0.005762630607932806
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            205089,
+            205089
+          ],
+          "follow_partner": [
+            1,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "No, the image does not contain a giraffe.",
+            "No, the image does not contain a giraffe."
+          ],
+          "prediction_norm": [
+            "no image does not contain giraffe",
+            "no image does not contain giraffe"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            10.083545684814453,
+            7.583545684814453
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        7.265625078463927
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000559051.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000120420.jpg"
+      ]
+    },
+    {
+      "suite": "grounding",
+      "pair_id": "ground_test_000018",
+      "subtype": "presence",
+      "question": "Does this image contain laptop?",
+      "answers": null,
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "no",
+            "yes"
+          ],
+          "prediction_norm": [
+            "no",
+            "yes"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            8.51584529876709,
+            5.877941608428955
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            220255,
+            51610
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "yes",
+            "no"
+          ],
+          "prediction_norm": [
+            "yes",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.0029415693134069443,
+            0.0002205128694185987
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            51610,
+            220255
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "no",
+            "no"
+          ],
+          "prediction_norm": [
+            "no",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            1
+          ],
+          "primary": [
+            0.0,
+            1.0
+          ],
+          "nll": [
+            1.7027746438980103,
+            0.20277464389801025
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            120420,
+            120420
+          ],
+          "follow_partner": [
+            1,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "Yes, the image contains a laptop.",
+            "Yes, the image contains a laptop."
+          ],
+          "prediction_norm": [
+            "yes image contains laptop",
+            "yes image contains laptop"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            5.211699962615967,
+            8.164825439453125
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        7.19531241250661
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000051610.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000220255.jpg"
+      ]
+    },
+    {
+      "suite": "natural",
+      "pair_id": "natural_test_000091",
+      "subtype": "other",
+      "question": "What type of animal is this?",
+      "answers": [
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear",
+        "bear"
+      ],
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "cow",
+            "bear"
+          ],
+          "prediction_norm": [
+            "cow",
+            "bear"
+          ],
+          "canonical": [
+            "bear",
+            "cow"
+          ],
+          "partner_canonical": [
+            "cow",
+            "bear"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            2.8904497623443604,
+            13.173360824584961
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            148055,
+            27272
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "bear",
+            "cow"
+          ],
+          "prediction_norm": [
+            "bear",
+            "cow"
+          ],
+          "canonical": [
+            "bear",
+            "cow"
+          ],
+          "partner_canonical": [
+            "cow",
+            "bear"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.009297998622059822,
+            0.23419985175132751
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            27272,
+            148055
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "dog",
+            "dog"
+          ],
+          "prediction_norm": [
+            "dog",
+            "dog"
+          ],
+          "canonical": [
+            "bear",
+            "cow"
+          ],
+          "partner_canonical": [
+            "cow",
+            "bear"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            7.126115322113037,
+            3.743302822113037
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            444390,
+            444390
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "The question is incomplete. Could you please provide more details about the animal you're",
+            "The question is incomplete. Could you please provide more details about the animal you're"
+          ],
+          "prediction_norm": [
+            "question is incomplete could you please provide more details about animal you're",
+            "question is incomplete could you please provide more details about animal you're"
+          ],
+          "canonical": [
+            "bear",
+            "cow"
+          ],
+          "partner_canonical": [
+            "cow",
+            "bear"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            13.53746509552002,
+            13.45934009552002
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        7.910156368277967
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000027272.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000148055.jpg"
+      ]
+    },
+    {
+      "suite": "natural",
+      "pair_id": "natural_test_000048",
+      "subtype": "number",
+      "question": "How many dogs are there?",
+      "answers": [
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "2",
+            "1"
+          ],
+          "prediction_norm": [
+            "2",
+            "1"
+          ],
+          "canonical": [
+            "1",
+            "2"
+          ],
+          "partner_canonical": [
+            "2",
+            "1"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            7.4411797523498535,
+            3.953080892562866
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            469088,
+            410016
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "1",
+            "2"
+          ],
+          "prediction_norm": [
+            "1",
+            "2"
+          ],
+          "canonical": [
+            "1",
+            "2"
+          ],
+          "partner_canonical": [
+            "2",
+            "1"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.031205978244543076,
+            0.0036795311607420444
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            410016,
+            469088
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "0",
+            "0"
+          ],
+          "prediction_norm": [
+            "0",
+            "0"
+          ],
+          "canonical": [
+            "1",
+            "2"
+          ],
+          "partner_canonical": [
+            "2",
+            "1"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            1.498659610748291,
+            2.358034610748291
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            40404,
+            40404
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "There are no dogs in the universe.",
+            "There are no dogs in the universe."
+          ],
+          "prediction_norm": [
+            "there are no dogs in universe",
+            "there are no dogs in universe"
+          ],
+          "canonical": [
+            "1",
+            "2"
+          ],
+          "partner_canonical": [
+            "2",
+            "1"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            5.961843013763428,
+            6.383718013763428
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        5.679687567753717
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000410016.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000469088.jpg"
+      ]
+    },
+    {
+      "suite": "natural",
+      "pair_id": "natural_test_000031",
+      "subtype": "yes/no",
+      "question": "Is the person skateboarding?",
+      "answers": [
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes",
+        "yes"
+      ],
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "no",
+            "yes"
+          ],
+          "prediction_norm": [
+            "no",
+            "yes"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            3.8655974864959717,
+            4.418574333190918
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            391463,
+            222833
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "yes",
+            "no"
+          ],
+          "prediction_norm": [
+            "yes",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.012324133887887001,
+            0.02184741012752056
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            222833,
+            391463
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "no",
+            "no"
+          ],
+          "prediction_norm": [
+            "no",
+            "no"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            1
+          ],
+          "primary": [
+            0.0,
+            1.0
+          ],
+          "nll": [
+            3.562067985534668,
+            0.030817896127700806
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            34524,
+            34524
+          ],
+          "follow_partner": [
+            1,
+            0
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "No, the person is not skateboarding.",
+            "No, the person is not skateboarding."
+          ],
+          "prediction_norm": [
+            "no person is not skateboarding",
+            "no person is not skateboarding"
+          ],
+          "canonical": [
+            "yes",
+            "no"
+          ],
+          "partner_canonical": [
+            "no",
+            "yes"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            9.754152297973633,
+            7.801027297973633
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        4.125000137835741
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000222833.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000391463.jpg"
+      ]
+    },
+    {
+      "suite": "natural",
+      "pair_id": "natural_test_000082",
+      "subtype": "other",
+      "question": "What sex is the person?",
+      "answers": [
+        "male",
+        "male",
+        "male",
+        "male",
+        "male",
+        "male",
+        "male",
+        "male",
+        "male",
+        "male"
+      ],
+      "conditions": {
+        "complementary": {
+          "predictions": [
+            "female",
+            "male"
+          ],
+          "prediction_norm": [
+            "female",
+            "male"
+          ],
+          "canonical": [
+            "male",
+            "female"
+          ],
+          "partner_canonical": [
+            "female",
+            "male"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            6.0821919441223145,
+            6.211766719818115
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            560626,
+            151084
+          ],
+          "follow_partner": [
+            1,
+            1
+          ]
+        },
+        "correct": {
+          "predictions": [
+            "male",
+            "female"
+          ],
+          "prediction_norm": [
+            "male",
+            "female"
+          ],
+          "canonical": [
+            "male",
+            "female"
+          ],
+          "partner_canonical": [
+            "female",
+            "male"
+          ],
+          "exact": [
+            1,
+            1
+          ],
+          "primary": [
+            1.0,
+            1.0
+          ],
+          "nll": [
+            0.03989169001579285,
+            0.097817063331604
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            151084,
+            560626
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        },
+        "mismatched": {
+          "predictions": [
+            "male",
+            "male"
+          ],
+          "prediction_norm": [
+            "male",
+            "male"
+          ],
+          "canonical": [
+            "male",
+            "female"
+          ],
+          "partner_canonical": [
+            "female",
+            "male"
+          ],
+          "exact": [
+            1,
+            0
+          ],
+          "primary": [
+            1.0,
+            0.0
+          ],
+          "nll": [
+            0.07908251881599426,
+            3.532207489013672
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            347688,
+            347688
+          ],
+          "follow_partner": [
+            0,
+            1
+          ]
+        },
+        "no_image": {
+          "predictions": [
+            "The question \"What sex is the person?\" is not a standard or commonly asked",
+            "The question \"What sex is the person?\" is not a standard or commonly asked"
+          ],
+          "prediction_norm": [
+            "question what sex is person is not standard or commonly asked",
+            "question what sex is person is not standard or commonly asked"
+          ],
+          "canonical": [
+            "male",
+            "female"
+          ],
+          "partner_canonical": [
+            "female",
+            "male"
+          ],
+          "exact": [
+            0,
+            0
+          ],
+          "primary": [
+            0.0,
+            0.0
+          ],
+          "nll": [
+            13.263962745666504,
+            13.943650245666504
+          ],
+          "empty": [
+            0,
+            0
+          ],
+          "image_id": [
+            null,
+            null
+          ],
+          "follow_partner": [
+            0,
+            0
+          ]
+        }
+      },
+      "rank": [
+        1,
+        2,
+        1,
+        6.078124955296516
+      ],
+      "image_files": [
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000151084.jpg",
+        "/kaggle/working/results/raw/data/images/val2014/COCO_val2014_000000560626.jpg"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "n_questions": 50,
+  "inference_sec_excluding_load": 4758.850069016,
+  "peak_gpu_memory_bytes": 6476103168,
+  "peak_gpu_memory_gib": 6.031341075897217,
+  "scorer": {
+    "math": "math-verify==unknown",
+    "mathvista": "mathvista-local-v1",
+    "no_answer_token": "NO_ANSWER"
+  },
+  "single": {
+    "accuracy": 0.76,
+    "mean_output_tokens": 474.3,
+    "mean_input_tokens": 105.02,
+    "truncation_rate": 0.0,
+    "extraction_rate": 1.0,
+    "mean_elapsed_sec": 21.053429403379997
+  },
+  "parallel": {
+    "accuracy": 0.76,
+    "mean_output_tokens": 1327.16,
+    "mean_input_tokens": 315.06,
+    "truncation_rate": 0.04,
+    "extraction_rate": 0.9733333333333333,
+    "mean_elapsed_sec": 58.55989189184002
+  },
+  "sequential": {
+    "accuracy": 0.76,
+    "mean_output_tokens": 761.88,
+    "mean_input_tokens": 670.32,
+    "truncation_rate": 0.0,
+    "extraction_rate": 1.0,
+    "mean_elapsed_sec": 34.20869035441998,
+    "transitions": {
+      "correct_to_correct": 38,
+      "wrong_to_wrong": 12
+    },
+    "wrong_to_correct": 0,
+    "correct_to_wrong": 0
+  },
+  "cost_note": "Shared initial parallel response is charged to both parallel and sequential when comparing costs; critique tokens and longer revision prompt are counted.",
+  "model_load_sec": 50.95955176000001,
+  "model_id": "Qwen/Qwen2.5-3B-Instruct",
+  "model_revision": null,
+  "generation_settings": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "repetition_penalty": 1.0,
+    "dtype": "float16",
+    "batch_size": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "connector": 1837056,
+  "lora": 4587520,
+  "other_trainable": 0,
+  "frozen_lm": 596049920,
+  "trainable_total": 6424576,
+  "stage": "visual_instruction",
+  "stage_index": 2,
+  "already_done": 0
+}

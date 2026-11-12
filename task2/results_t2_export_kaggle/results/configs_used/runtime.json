@@ -1,0 +1,6 @@
+{
+  "smoke_active": false,
+  "seed": 6304,
+  "num_visual_tokens": 196,
+  "artifacts_root": "/kaggle/working/results"
+}

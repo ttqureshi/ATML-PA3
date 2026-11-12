@@ -1,0 +1,46 @@
+{
+  "model_load_sec": 16.538837227000045,
+  "train_loop_sec": 8342.718278933,
+  "peak_gpu_mem_mb": 4069.56689453125,
+  "updates": 4500,
+  "examples_seen": 72000,
+  "skipped_updates": 1,
+  "trainable_by_stage": {
+    "stage1": {
+      "connector": 1837056,
+      "lora": 0,
+      "other_trainable": 0,
+      "frozen_lm": 596049920,
+      "trainable_total": 1837056,
+      "stage": "caption_alignment",
+      "stage_index": 1,
+      "already_done": 0
+    },
+    "stage2": {
+      "connector": 1837056,
+      "lora": 4587520,
+      "other_trainable": 0,
+      "frozen_lm": 596049920,
+      "trainable_total": 6424576,
+      "stage": "visual_instruction",
+      "stage_index": 2,
+      "already_done": 0
+    },
+    "stage3": {
+      "connector": 1837056,
+      "lora": 4587520,
+      "other_trainable": 0,
+      "frozen_lm": 596049920,
+      "trainable_total": 6424576,
+      "stage": "natural_vqa",
+      "stage_index": 3,
+      "already_done": 0
+    }
+  },
+  "feature_cache": {
+    "peak_gpu_mem_mb": 314.91455078125,
+    "wall_time_sec": 180.62149039099995,
+    "num_images": 16504,
+    "extracted_this_run": 16504
+  }
+}

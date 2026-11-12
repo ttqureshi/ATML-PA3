@@ -1,0 +1,16 @@
+{
+  "caption_alignment": {
+    "caption": 36000
+  },
+  "visual_instruction": {
+    "caption": 6074,
+    "counting": 6002,
+    "presence": 11924
+  },
+  "natural_vqa": {
+    "natural": 8474,
+    "caption": 1116,
+    "presence": 1190,
+    "counting": 1220
+  }
+}

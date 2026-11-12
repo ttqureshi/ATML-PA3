@@ -1,0 +1,31 @@
+CMD: /usr/bin/python3 -m src.train.run_train --artifacts-root /kaggle/working/results --smoke
+
+Traceback (most recent call last):
+  File "/kaggle/working/task2/src/run_stage.py", line 54, in _run
+    raise subprocess.CalledProcessError(code, cmd)
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-m', 'src.train.run_train', '--artifacts-root', '/kaggle/working/results', '--smoke']' returned non-zero exit status 1.
+
+
+--- subprocess log ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/task2/src/train/run_train.py", line 15, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/working/task2/src/train/run_train.py", line 11, in main
+    train(cfg, dirs, fresh=bool(args.fresh))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/task2/src/train/trainer.py", line 435, in train
+    _ensure_prompt_split(tokenizer)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/kaggle/working/task2/src/train/trainer.py", line 396, in _ensure_prompt_split
+    tokenizer._atml_prompt_split = discover_prompt_split(tokenizer)
+                                   ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/kaggle/working/task2/src/models/vlm.py", line 90, in discover_prompt_split
+    full = _apply_ids(tokenizer, [{"role": "user", "content": probe}], True)
+  File "/kaggle/working/task2/src/models/vlm.py", line 68, in _apply_ids
+    return [int(token) for token in out]
+            ~~~^^^^^^^
+ValueError: invalid literal for int() with base 10: 'input_ids'

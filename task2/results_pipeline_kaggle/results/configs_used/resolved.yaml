@@ -1,0 +1,129 @@
+seed: 6304
+enable_thinking: false
+model:
+  vision_encoder: google/siglip-base-patch16-224
+  language_model: Qwen/Qwen3-0.6B
+  vision_dim: 768
+  lm_hidden: 1024
+  connector_hidden: 1024
+  num_visual_tokens: 196
+  vision_final_layernorm: once
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+data:
+  min_agreement: 8
+  caption_train_images: 6000
+  captions_per_train_image: 3
+  caption_dev_images: 96
+  caption_passes: 2
+  grounding_train_pool_cap:
+    presence: 2048
+    counting: 2048
+  grounding_dev_pairs:
+    presence: 12
+    counting: 12
+  grounding_test_pairs:
+    presence: 32
+    counting: 32
+  natural_train_pairs:
+    yes/no: 640
+    number: 256
+    other: 640
+  natural_dev_pairs:
+    yes/no: 12
+    number: 8
+    other: 12
+  natural_test_pairs:
+    yes/no: 36
+    number: 24
+    other: 36
+  templates:
+    presence: Does this image contain {object}?
+    counting: How many {objects} can you see?
+  caption_prompt: Provide a short caption for this image.
+  download_workers: 16
+  download_retries: 5
+  feature_batch_size: 32
+training:
+  microbatch_size: 8
+  grad_accum: 2
+  effective_batch: 16
+  optimizer: adamw
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-08
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  warmup_fraction: 0.05
+  cosine_final_lr_fraction: 0.1
+  gradient_checkpointing: true
+  quantization: none
+  fp16: true
+  log_every: 1
+  checkpoint_every: 250
+  question_tokens: 80
+  caption_tokens: 64
+  short_answer_tokens: 16
+  calibration_images: 32
+  calibration_text_tokens: 2048
+  stages:
+  - name: caption_alignment
+    updates: 2250
+    connector_lr: 0.001
+    lora_lr: null
+    mixture: null
+  - name: visual_instruction
+    updates: 1500
+    connector_lr: 0.0001
+    lora_lr: 2.0e-05
+    mixture:
+      presence: 0.5
+      counting: 0.25
+      caption: 0.25
+  - name: natural_vqa
+    updates: 750
+    connector_lr: 5.0e-05
+    lora_lr: 1.0e-05
+    mixture:
+      natural: 0.7
+      presence: 0.1
+      counting: 0.1
+      caption: 0.1
+evaluation:
+  dev_every: 500
+  max_new_tokens: 16
+  gen_batch_size: 8
+  bootstrap_resamples: 4000
+  bootstrap_seed: 6304
+smoke:
+  updates_per_stage: 2
+  caption_train_examples: 32
+  captions_per_train_image: 1
+  caption_dev_images: 8
+  grounding_train_pool_cap:
+    presence: 8
+    counting: 8
+  grounding_dev_pairs:
+    presence: 4
+    counting: 4
+  grounding_test_pairs:
+    presence: 4
+    counting: 4
+  natural_pairs:
+    yes/no: 4
+    number: 2
+    other: 2
+  bootstrap_resamples: 50
+  feature_batch_size: 8
+paths:
+  artifacts_root: results
+smoke_active: false
