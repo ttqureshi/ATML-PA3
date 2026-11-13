@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.adaptive.policies import select_thresholds, simulate_adaptive
+from src.adaptive.policies import analyze_early_stop_recovery, select_thresholds, simulate_adaptive
 from src.analysis.plots import save_accuracy_curves
 from src.analysis.signals import analyze_signals_n32
 from src.common.config import parse_common_args, prepare_runtime
@@ -138,6 +138,76 @@ def run_adaptive_for_dataset(payload: dict, cfg: dict, dirs: dict, dataset: str)
             gamma=float(sel_qual.get("gamma", 0.0)),
         ),
     }
+
+    # Retrospective: incorrect early stops and fixed-32 recovery (held-out).
+    early_stop_analysis = {}
+    for pname, sel in (("agreement", sel_agr), ("quality", sel_qual)):
+        n_orders = 0
+        n_early = 0
+        n_incorrect_early = 0
+        n_recovered = 0
+        n_incorrect_not_recovered = 0
+        for sid in splits["eval_ids"]:
+            sub = df[df["sample_id"].astype(str) == str(sid)].copy()
+            if "rollout_id" in sub.columns:
+                sub = sub.sort_values("rollout_id").reset_index(drop=True)
+            else:
+                sub = sub.reset_index(drop=True)
+            answers = (
+                sub["extracted_answer_used"].tolist()
+                if "extracted_answer_used" in sub.columns
+                else sub.get("extracted_answer").tolist()
+            )
+            gold = sub.loc[0, "gold_answer_used"] if "gold_answer_used" in sub.columns else sub.loc[0].get("gold_answer")
+            token_costs = [token_count_for_cost(sub.loc[i]) for i in range(len(sub))]
+            scores_fn = _score_fn_factory(sub, dataset, score_name)
+            q_orders = orders.get(str(sid), [])
+            for perm in q_orders:
+                if "rollout_id" in sub.columns:
+                    id_to_idx = {int(r): i for i, r in enumerate(sub["rollout_id"].tolist())}
+                    order = [id_to_idx.get(int(r), int(r) if int(r) < len(sub) else 0) for r in perm]
+                else:
+                    order = list(perm)
+                rec = analyze_early_stop_recovery(
+                    answers,
+                    order,
+                    dataset,
+                    token_costs,
+                    scores_fn,
+                    policy=pname,
+                    tau=float(sel.get("tau", 1.0)),
+                    gamma=float(sel.get("gamma", 0.0)),
+                    gold=gold,
+                    check_ns=ad_cfg["check_ns"],
+                    max_n=ad_cfg["max_n"],
+                )
+                n_orders += 1
+                if rec["early_stop"]:
+                    n_early += 1
+                if rec["incorrect_early_stop"]:
+                    n_incorrect_early += 1
+                    if rec["recovered_by_fixed32"]:
+                        n_recovered += 1
+                    else:
+                        n_incorrect_not_recovered += 1
+        early_stop_analysis[pname] = {
+            "tau": float(sel.get("tau", 1.0)),
+            "gamma": float(sel.get("gamma", 0.0)),
+            "n_question_orders": n_orders,
+            "n_early_stops": n_early,
+            "n_incorrect_early_stops": n_incorrect_early,
+            "n_recovered_by_fixed32_sc": n_recovered,
+            "n_incorrect_early_not_recovered": n_incorrect_not_recovered,
+            "frac_orders_early_stop": (n_early / n_orders) if n_orders else float("nan"),
+            "frac_orders_incorrect_early_stop": (n_incorrect_early / n_orders) if n_orders else float("nan"),
+            "frac_incorrect_early_recovered_by_fixed32": (n_recovered / n_incorrect_early) if n_incorrect_early else float("nan"),
+            "note": (
+                "Counts are over held-out questions × 10 nested orders. "
+                "incorrect_early_stop = stopped before 32 and SC answer wrong; "
+                "recovered_by_fixed32_sc = that order's fixed-32 SC would have been correct."
+            ),
+        }
+
     out = {
         "dataset": dataset,
         "score_name": score_name,
@@ -146,6 +216,7 @@ def run_adaptive_for_dataset(payload: dict, cfg: dict, dirs: dict, dataset: str)
         "selected_quality": sel_qual,
         "dev_grid_size": len(grid),
         "held_out": held,
+        "early_stop_analysis": early_stop_analysis,
     }
     write_json(dirs["adaptive"] / f"{dataset}_adaptive.json", out)
     return out

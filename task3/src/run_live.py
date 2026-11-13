@@ -45,8 +45,9 @@ def main() -> int:
                 continue
             row = sub.iloc[0]
             problem = None
-            for col in ("problem", "question", "prompt", "input_text"):
-                if col in sub.columns and row[col] is not None:
+            # Official ATML-PA3-Data uses question_text (see data README).
+            for col in ("question_text", "problem", "question", "prompt", "input_text"):
+                if col in sub.columns and row.get(col) is not None and str(row.get(col)).strip():
                     problem = str(row[col])
                     break
             gold = row.get("gold_answer_used", row.get("gold_answer"))

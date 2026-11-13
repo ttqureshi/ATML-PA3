@@ -1,12 +1,12 @@
 {
   "tables": {
     "benchmark": "/content/atml_results/tables/benchmark_primary.csv",
-    "resources": "None",
+    "resources": "report_bundle\\tables\\resources.csv",
     "weight_space": "/content/atml_results/tables/weight_space.csv"
   },
   "figures": {
-    "sft_loss": "None",
-    "l2sp": "None",
+    "sft_loss": "report_bundle\\figures\\sft_loss_curves.png",
+    "l2sp": "report_bundle\\figures\\l2sp_penalty.png",
     "benchmark": "/content/atml_results/figures/benchmark_scores.png",
     "diagnostics": [
       "/content/atml_results/figures/weight_space_diagnostics.png",

@@ -170,6 +170,9 @@ def default_methods_for_dataset(dataset: str) -> list[tuple[str, str | None, str
                 ("VisionRWC", "vision", "rwc"),
                 ("HighestVisConf", "visconf", "highest"),
                 ("VisConfRWC", "visconf", "rwc"),
+                # Tokenwise fusion ablation (assignment §3 Step 3): Ztoken = mean_t(c_t * v_t)
+                ("HighestVisConfToken", "visconf_token", "highest"),
+                ("VisConfTokenRWC", "visconf_token", "rwc"),
             ]
         )
     return methods

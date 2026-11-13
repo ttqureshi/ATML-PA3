@@ -9,7 +9,9 @@
   "enable_tpu": false,
   "enable_internet": true,
   "keywords": [],
-  "dataset_sources": [],
+  "dataset_sources": [
+    "mtayyabtahir/atml-pa3-data"
+  ],
   "kernel_sources": [],
   "competition_sources": [],
   "model_sources": [],

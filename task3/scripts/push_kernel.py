@@ -10,6 +10,7 @@ KERNELS = {
     "smoke": ROOT / "kaggle" / "kernels" / "atml-pa3-t3-smoke",
     "live": ROOT / "kaggle" / "kernels" / "atml-pa3-t3-live",
     "offline": ROOT / "kaggle" / "kernels" / "atml-pa3-t3-offline",
+    "gapfill": ROOT / "kaggle" / "kernels" / "atml-pa3-t3-gapfill",
 }
 
 
@@ -17,7 +18,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--only",
-        choices=["smoke", "live", "offline", "all"],
+        choices=["smoke", "live", "offline", "gapfill", "all"],
         default="live",
         help="Which kernel(s) to push. Default is live.",
     )

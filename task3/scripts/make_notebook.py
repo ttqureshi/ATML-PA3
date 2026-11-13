@@ -55,7 +55,7 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
             "outputs": [],
             "source": [
                 "import os, sys, shutil, pathlib, zipfile, io, base64\n",
-                f"STAGE = '{stage}'\n",
+                f"STAGE = '{stage}'  # smoke|live|offline|gapfill\n",
                 "dst = pathlib.Path('/kaggle/working/task3')\n",
                 "if dst.exists():\n",
                 "    shutil.rmtree(dst)\n",
@@ -174,10 +174,19 @@ def build_notebook(stage: str, title: str, code_b64: str) -> dict:
                 "    os.environ['ATML_SMOKE'] = '1'\n",
                 "pathlib.Path('/kaggle/working/results').mkdir(parents=True, exist_ok=True)\n",
                 "t0 = time.time()\n",
-                "module = 'src.run_offline' if STAGE == 'offline' else 'src.run_live'\n",
+                "module = {\n",
+                "    'offline': 'src.run_offline',\n",
+                "    'gapfill': 'src.run_gapfill',\n",
+                "    'live': 'src.run_live',\n",
+                "    'smoke': 'src.run_live',\n",
+                "}.get(STAGE, 'src.run_live')\n",
                 "cmd = [sys.executable, '-m', module, '--artifacts-root', '/kaggle/working/results']\n",
                 "if STAGE == 'smoke':\n",
                 "    cmd.append('--smoke')\n",
+                "if STAGE in {'offline', 'gapfill', 'live'}:\n",
+                "    # Require official data; do not silently fall back for live.\n",
+                "    print('ATML_PA3_DATA', os.environ.get('ATML_PA3_DATA'), flush=True)\n",
+
                 "print('Running', cmd, flush=True)\n",
                 "try:\n",
                 "    rc = subprocess.call(cmd)\n",
@@ -242,6 +251,7 @@ def main() -> None:
         "atml-pa3-t3-smoke": ("smoke", "atml-pa3-t3-smoke"),
         "atml-pa3-t3-live": ("live", "atml-pa3-t3-live"),
         "atml-pa3-t3-offline": ("offline", "atml-pa3-t3-offline"),
+        "atml-pa3-t3-gapfill": ("gapfill", "atml-pa3-t3-gapfill"),
     }
     out_root = ROOT / "kaggle" / "kernels"
     out_root.mkdir(parents=True, exist_ok=True)
@@ -256,8 +266,9 @@ def main() -> None:
         notebook = build_notebook(stage, slug, code_b64)
         code_file = f"{folder_name}.ipynb"
         (folder / code_file).write_text(json.dumps(notebook, separators=(",", ":")), encoding="utf-8")
-        # Offline needs the parquet dataset; live/smoke keep internet for HF.
-        attach_data = stage == "offline" or bool(os.environ.get("ATML_KAGGLE_DATA_DATASET"))
+        # Always attach official ATML-PA3-Data so live uses the required first-50
+        # held-out MATH IDs (question_text) instead of the HF fallback.
+        attach_data = True if dataset_sources else (stage == "offline")
         meta = {
             "id": f"{user}/{slug}",
             "title": slug,

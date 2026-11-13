@@ -1,0 +1,46 @@
+{
+  "N": 32,
+  "HighestVisConf": {
+    "accuracy": 0.56875,
+    "mean_token_cost": 8897.7575
+  },
+  "VisConfRWC": {
+    "accuracy": 0.6375,
+    "mean_token_cost": 8897.7575
+  },
+  "HighestVisConfToken": {
+    "accuracy": 0.55375,
+    "mean_token_cost": 8897.7575
+  },
+  "VisConfTokenRWC": {
+    "accuracy": 0.63,
+    "mean_token_cost": 8897.7575
+  },
+  "bootstrap_vs_sc": {
+    "HighestVisConf": {
+      "mean": -0.05325,
+      "low": -0.083253125,
+      "high": -0.022250000000000006,
+      "n": 800
+    },
+    "VisConfRWC": {
+      "mean": 0.015499999999999998,
+      "low": 0.001125,
+      "high": 0.031378125,
+      "n": 800
+    },
+    "HighestVisConfToken": {
+      "mean": -0.06825,
+      "low": -0.09800937500000001,
+      "high": -0.037625,
+      "n": 800
+    },
+    "VisConfTokenRWC": {
+      "mean": 0.007999999999999998,
+      "low": -0.00525625,
+      "high": 0.023125,
+      "n": 800
+    }
+  },
+  "note": "Tokenwise fusion Ztoken=mean_t(c_t v_t) vs summary Z=V*C; same prefix calibration."
+}

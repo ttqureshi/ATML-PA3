@@ -1,0 +1,7 @@
+{
+  "smoke_active": false,
+  "seed": 6304,
+  "artifacts_root": "/kaggle/working/results",
+  "data_root": "/kaggle/input/atml-pa3-data",
+  "data_exists": true
+}

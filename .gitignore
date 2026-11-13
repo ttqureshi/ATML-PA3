@@ -88,3 +88,17 @@ task1/scripts/_kaggle_browser_peek.py
 # Bloated Kaggle kernel dumps with embedded outputs/weights (~GB)
 task1/kaggle/kernels/atml-pa3-t1-eval-*/
 task1/kaggle/kernels/atml-pa3-t1-post-analyze/
+
+# Local backups / staging / report build debris
+**/_bak_*/
+**/*_bak_*/
+**/*_staging_*/
+**/watch.log
+report/chk-*.png
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
