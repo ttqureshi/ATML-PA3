@@ -102,3 +102,6 @@ report/*.toc
 report/*.fls
 report/*.fdb_latexmk
 report/*.synctex.gz
+
+task3/results_gapfill_kaggle/
+
