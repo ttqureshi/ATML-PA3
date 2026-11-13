@@ -94,6 +94,7 @@ task1/kaggle/kernels/atml-pa3-t1-post-analyze/
 **/*_bak_*/
 **/*_staging_*/
 **/watch.log
+task3/results_gapfill_kaggle/
 report/chk-*.png
 report/*.aux
 report/*.log

@@ -1,18 +1,50 @@
 {
   "dataset": "math",
   "score_name": "self_certainty",
-  "note": "Thresholds reused from prior offline COMPLETE; early_stop_analysis added by gapfill.",
+  "fixed32_dev_accuracy": 0.75,
   "selected_agreement": {
     "policy": "agreement",
     "tau": 0.625,
-    "gamma": 0.0
+    "gamma": 0.0,
+    "accuracy": 0.7440000000000001,
+    "mean_token_cost": 7520.064,
+    "mean_rollouts": 10.144
   },
   "selected_quality": {
     "policy": "quality",
     "tau": 0.625,
-    "gamma": 0.0
+    "gamma": 0.0,
+    "accuracy": 0.7434999999999999,
+    "mean_token_cost": 7579.327000000001,
+    "mean_rollouts": 10.229999999999999
   },
-  "thresholds_source": "frozen_from_offline_complete",
+  "dev_grid_size": 26,
+  "held_out": {
+    "fixed32": {
+      "policy": "always32",
+      "tau": 0.0,
+      "gamma": 0.0,
+      "accuracy": 0.6655,
+      "mean_token_cost": 21347.0175,
+      "mean_rollouts": 32.0
+    },
+    "agreement": {
+      "policy": "agreement",
+      "tau": 0.625,
+      "gamma": 0.0,
+      "accuracy": 0.6651250000000001,
+      "mean_token_cost": 10417.372,
+      "mean_rollouts": 12.4385
+    },
+    "quality": {
+      "policy": "quality",
+      "tau": 0.625,
+      "gamma": 0.0,
+      "accuracy": 0.66525,
+      "mean_token_cost": 10471.553125,
+      "mean_rollouts": 12.5175
+    }
+  },
   "early_stop_analysis": {
     "agreement": {
       "tau": 0.625,

@@ -1,18 +1,50 @@
 {
   "dataset": "mathvista",
   "score_name": "visconf",
-  "note": "Thresholds reused from prior offline COMPLETE; early_stop_analysis added by gapfill.",
+  "fixed32_dev_accuracy": 0.628,
   "selected_agreement": {
     "policy": "agreement",
     "tau": 0.625,
-    "gamma": 0.0
+    "gamma": 0.0,
+    "accuracy": 0.6265000000000001,
+    "mean_token_cost": 5287.517,
+    "mean_rollouts": 14.017999999999999
   },
   "selected_quality": {
     "policy": "quality",
     "tau": 0.5,
-    "gamma": 0.1
+    "gamma": 0.1,
+    "accuracy": 0.62,
+    "mean_token_cost": 4171.6915,
+    "mean_rollouts": 11.315999999999999
   },
-  "thresholds_source": "frozen_from_offline_complete",
+  "dev_grid_size": 26,
+  "held_out": {
+    "fixed32": {
+      "policy": "always32",
+      "tau": 0.0,
+      "gamma": 0.0,
+      "accuracy": 0.622125,
+      "mean_token_cost": 8897.7575,
+      "mean_rollouts": 32.0
+    },
+    "agreement": {
+      "policy": "agreement",
+      "tau": 0.625,
+      "gamma": 0.0,
+      "accuracy": 0.6202500000000001,
+      "mean_token_cost": 4595.458625,
+      "mean_rollouts": 13.595500000000001
+    },
+    "quality": {
+      "policy": "quality",
+      "tau": 0.5,
+      "gamma": 0.1,
+      "accuracy": 0.6165,
+      "mean_token_cost": 3722.515125,
+      "mean_rollouts": 11.280999999999999
+    }
+  },
   "early_stop_analysis": {
     "agreement": {
       "tau": 0.625,
